@@ -1,0 +1,138 @@
+{% load gftags %}
+<html lang="zh_CN">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Invest Copilot | Internal Research Report </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Invest Copilot">
+    <meta name="author" content="Rocky">
+
+
+    <link rel="stylesheet" type="text/css" href="/static/css/InvestCopilot.css">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/themes/night.css" id="skin-switcher">
+    <link rel="stylesheet" type="text/css" href="/static/css/responsive.css">
+
+</head>
+
+<body>
+    {% include 'include/top.html' %}
+
+    <!-- PAGE -->
+    <section id="page">
+        {% include 'include/page_menu_v_1.html' %}
+
+        <div id="main-content">
+            <div class="container">
+                <div class="row">
+                    <div id="content" class="col-lg-12">
+                        <!-- PAGE HEADER-->
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="page-header">
+                                    <div class="description"></div>
+                                    <div class="clearfix">
+                                        <h5 class="content-title pull-left">内部研报</h5>
+                                    </div>
+                                    <div class="description"></div>
+                                    {{ request|operaBusinCodeTag:'内部研报' }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /PAGE HEADER -->
+                        <div class="row vh-80 bg-secondary rounded align-items-center justify-content-center mx-0">
+                            <div class="col-md-6 text-center">
+                                <a href="#" class="btn btn-primary btn-lg btn-block" onclick="downtestfile('test001')">下载测试文件</a>
+                            </div>
+                        </div>
+
+                        {% include 'include/bottom.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--/PAGE -->
+    <!-- JAVASCRIPTS -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- JQUERY -->
+    <script src="/static/js/jquery/jquery-2.0.3.min.js"></script>
+    <!-- JQUERY UI-->
+    <script src="/static/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <!-- BOOTSTRAP -->
+    <script src="/static/bootstrap-dist/js/bootstrap.min.js"></script>
+
+
+    <!-- DATE RANGE PICKER -->
+    <!--script src="/static/js/bootstrap-daterangepicker/moment.min.js"></script>
+	
+	<script src="/static/js/bootstrap-daterangepicker/daterangepicker.min.js"></script-->
+    <!-- SLIMSCROLL -->
+    <!--script type="text/javascript" src="/static/js/jQuery-slimScroll-1.3.0/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript" src="js/jQuery-slimScroll-1.3.0/slimScrollHorizontal.min.js"></script-->
+    <!-- COOKIE -->
+    <script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+    <!-- CUSTOM SCRIPT -->
+    <script src="/static/js/script.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            App.init(); //Initialise plugins and elements and menu
+        });
+
+        var downloadfile = false;
+
+        function downtestfile(researchId) {
+            if (!downloadfile) {
+                window.open("/api/viewInterResearch/?doMethod=getInterResearchReport&researchId=" + researchId, "_blank");
+                return;
+            }
+
+            $.ajax({
+                url: "/api/viewInterResearch/",
+                method: 'POST',
+                //dataType: 'json',  
+                data: {
+                    'doMethod': 'getInterResearchReport',
+                    'researchId': researchId,
+                },
+                success: function (data) {
+
+
+                    if (data.errorCode != '0000000') {
+                        $("#InfoTitle").html("执行失败");
+                        $("#InfoContent").html(data.errorMsg);
+                        $("#Infomodal-1").modal();
+                        return;
+                    }
+                    else {
+                        // 创建a标签，设置属性，并触发点击下载                        
+                        var $a = $("<a>");
+                        $a.attr("href", data.data.file);
+                        $a.attr("download", data.data.filename);
+                        $("body").append($a);
+                        $a[0].click();
+                        $a.remove();
+
+
+
+                    }
+
+                },
+                error: function (xhr, textStatus) {
+                    $("#InfoTitle").html("执行失败");
+                    $("#InfoContent").html('抱歉，处理过程失败，请稍后重试');
+                    $("#Infomodal-1").modal();
+                    console.log('错误');
+                    console.log(xhr);
+                    console.log(textStatus);
+
+                }
+            });
+        }
+    </script>
+    <!-- /JAVASCRIPTS -->
+</body>
+
+</html>

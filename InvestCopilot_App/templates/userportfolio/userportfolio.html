@@ -1,0 +1,1275 @@
+﻿{% load gftags %}
+
+<html lang="zh_CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <meta charset="utf-8"/>
+  <title>Invest Copilot | User Portfolio</title>
+  <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+  />
+  <meta name="description" content="Invest Copilot"/>
+  <meta name="author" content="Rocky"/>
+
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/js/toastr-2.1.3/toastr.min.css"
+  />
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/css/InvestCopilot.css"
+  />
+  <link
+      href="/static/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+  />
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/css/themes/night.css"
+      id="skin-switcher"
+  />
+  <link rel="stylesheet" type="text/css" href="/static/css/responsive.css"/>
+</head>
+
+<body>
+{% include 'include/top.html' %}
+
+<!-- PAGE -->
+<section id="page">
+  {% include 'include/page_menu_v_1.html' %}
+
+  <div id="main-content">
+    <div class="container">
+      <div class="row">
+        <div id="content" class="col-lg-12">
+          <!-- PAGE HEADER-->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="page-header">
+                <div class="description"></div>
+                <div class="clearfix">
+                  <h5 class="content-title pull-left">自选股</h5>
+                </div>
+                <div class="description"></div>
+                {{ request|operaBusinCodeTag:'自选股' }}
+              </div>
+            </div>
+          </div>
+          <!-- /PAGE HEADER -->
+          <div class="row">
+            <div class="col-md-12">
+              <!-- BOX -->
+              <div class="box">
+                <div class="box-title-noborder box-title">
+                  <div class="btn-group dropdown">
+                    <input
+                        type="hidden"
+                        id="selectedportfolioid"
+                        value="0"
+                    />
+                    <button
+                        class="btn btn-default dropdown-toggle portfolio-select-big"
+                        data-toggle="dropdown"
+                        id="selectedportfolio"
+                    >
+                      默认组合<span class="caret"></span>
+                    </button>
+                    <ul
+                        class="dropdown-menu context"
+                        id="userportfolio_list"
+                    >
+                      <li>
+                        <button class="no_border_button" type="button">
+                          <div class="row div_button_info1">
+                            <div class="col-md-12">
+                              <span class="portfolio_name">默认组合</span>
+                            </div>
+                          </div>
+                          <div class="row div_button_info2">
+                            <div class="col-md-12">
+                              <span class="portfolio_desc">共4个股票</span>
+                            </div>
+                          </div>
+                        </button>
+                      </li>
+                      <li class="divider"></li>
+                      <li>
+                        <div class="div_selectbutton">
+                          <button
+                              class="btn btn-xs in_select_button"
+                              onclick="click_new_portfolio()"
+                          >
+                            <i class="fa fa-plus"></i>新建组合
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="tools">
+                    <button
+                        class="btn btn-xs btn-grey"
+                        onclick="click_add_stock()"
+                    >
+                      <i class="fa fa-plus"></i> 添加股票
+                    </button>
+                    <button class="btn btn-xs btn-success">
+                      <i class="fa fa-pencil"></i> 修改组合
+                    </button>
+                  </div>
+                </div>
+                <div class="box-body font-400">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label class="user-def-view">概要</label>
+                      <label class="user-def-view">持仓</label>
+                      <label class="user-def-view">盈利</label>
+                      <label class="user-def-view">收益率</label>
+                      <label class="user-def-view">动量</label>
+                      <a href>+添加视图</a>
+                    </div>
+                  </div>
+                  <div class="new-separator"></div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="box">
+                        <div class="new-box-body font-400">
+                          <table
+                              id="PortfolioDataTable1"
+                              class="table table-hover table-borderless no-footer dataTable"
+                          >
+                            <thead>
+                            <tr>
+                              <th
+                                  class="1xxxx columns hoverable sorting dtfc-fixed-left"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Symbol: activate to sort column ascending"
+                                  style="left: 0px; position: sticky"
+                              >
+                                Symbol
+                              </th>
+                              <th
+                                  class="2xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Price: activate to sort column ascending"
+                              >
+                                Price
+                              </th>
+                              <th
+                                  class="3xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Change %: activate to sort column ascending"
+                              >
+                                Change %
+                              </th>
+                              <th
+                                  class="4xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="PE: activate to sort column ascending"
+                              >
+                                PE
+                              </th>
+                              <th
+                                  class="5xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Close: activate to sort column ascending"
+                              >
+                                Close
+                              </th>
+                              <th
+                                  class="6xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Close vs 50SMA Δ: activate to sort column ascending"
+                              >
+                                Close vs 50SMA Δ
+                              </th>
+                              <th
+                                  class="7xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="PE smart FY1: activate to sort column ascending"
+                              >
+                                PE smart FY1
+                              </th>
+                              <th
+                                  class="8xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="AR: activate to sort column ascending"
+                              >
+                                AR
+                              </th>
+                              <th
+                                  class="9xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="EQ: activate to sort column ascending"
+                              >
+                                EQ
+                              </th>
+                              <th
+                                  class="10xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="VA: activate to sort column ascending"
+                              >
+                                VA
+                              </th>
+                              <th
+                                  class="11xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="MO: activate to sort column ascending"
+                              >
+                                MO
+                              </th>
+                              <th
+                                  class="12xxxx columns hoverable sorting"
+                                  tabindex="0"
+                                  aria-controls="btn_sg0_div1_table1"
+                                  rowspan="1"
+                                  colspan="1"
+                                  aria-label="Sector: activate to sort column ascending"
+                              >
+                                Sector
+                              </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="odd">
+                              <td
+                                  class="1xxxx columns hoverable dtfc-fixed-left"
+                                  style="left: 0px; position: sticky"
+                              >
+                                <a href class="Stock-Symbol">MSFT</a>
+                              </td>
+                              <td class="2xxxx columns hoverable">
+                                315.75
+                              </td>
+                              <td class="3xxxx columns hoverable">
+                                0.67
+                              </td>
+                              <td class="4xxxx columns hoverable">
+                                32.60
+                              </td>
+                              <td class="5xxxx columns hoverable">
+                                315.75
+                              </td>
+                              <td class="6xxxx columns hoverable">
+                                -11.58
+                              </td>
+                              <td class="7xxxx columns hoverable">
+                                27.16
+                              </td>
+                              <td class="8xxxx columns hoverable">
+                                82.00
+                              </td>
+                              <td class="9xxxx columns hoverable">
+                                74.00
+                              </td>
+                              <td class="10xxxx columns hoverable">
+                                16.00
+                              </td>
+                              <td class="11xxxx columns hoverable">
+                                92.00
+                              </td>
+                              <td class="12xxxx columns hoverable">
+                                Information Technology
+                              </td>
+                            </tr>
+                            <tr class="even">
+                              <td
+                                  class="1xxxx columns hoverable dtfc-fixed-left"
+                                  style="left: 0px; position: sticky"
+                              >
+                                <a href class="Stock-Symbol">贵州茅台</a>
+                              </td>
+                              <td class="2xxxx columns hoverable">
+                                1798.55
+                              </td>
+                              <td class="3xxxx columns hoverable">
+                                -0.85
+                              </td>
+                              <td class="4xxxx columns hoverable">
+                                32.79
+                              </td>
+                              <td class="5xxxx columns hoverable">
+                                1798.55
+                              </td>
+                              <td class="6xxxx columns hoverable">
+                                -36.01
+                              </td>
+                              <td class="7xxxx columns hoverable">
+                                26.42
+                              </td>
+                              <td class="8xxxx columns hoverable">
+                                79.00
+                              </td>
+                              <td class="9xxxx columns hoverable">
+                                83.00
+                              </td>
+                              <td class="10xxxx columns hoverable">
+                                28.00
+                              </td>
+                              <td class="11xxxx columns hoverable">
+                                37.00
+                              </td>
+                              <td class="12xxxx columns hoverable">
+                                Consumer Staples
+                              </td>
+                            </tr>
+                            <tr class="odd">
+                              <td
+                                  class="1xxxx columns hoverable dtfc-fixed-left"
+                                  style="left: 0px; position: sticky"
+                              >
+                                <a href class="Stock-Symbol">NVDA</a>
+                              </td>
+                              <td class="2xxxx columns hoverable">
+                                434.99
+                              </td>
+                              <td class="3xxxx columns hoverable">
+                                0.95
+                              </td>
+                              <td class="4xxxx columns hoverable">
+                                105.08
+                              </td>
+                              <td class="5xxxx columns hoverable">
+                                434.99
+                              </td>
+                              <td class="6xxxx columns hoverable">
+                                -14.36
+                              </td>
+                              <td class="7xxxx columns hoverable">
+                                28.83
+                              </td>
+                              <td class="8xxxx columns hoverable">
+                                100.00
+                              </td>
+                              <td class="9xxxx columns hoverable">
+                                62.00
+                              </td>
+                              <td class="10xxxx columns hoverable">
+                                13.00
+                              </td>
+                              <td class="11xxxx columns hoverable">
+                                81.00
+                              </td>
+                              <td class="12xxxx columns hoverable">
+                                Information Technology
+                              </td>
+                            </tr>
+                            <tr class="even">
+                              <td
+                                  class="1xxxx columns hoverable dtfc-fixed-left"
+                                  style="left: 0px; position: sticky"
+                              >
+                                <a href class="Stock-Symbol">BABA</a>
+                              </td>
+                              <td class="2xxxx columns hoverable">
+                                86.74
+                              </td>
+                              <td class="3xxxx columns hoverable">1.4</td>
+                              <td class="4xxxx columns hoverable">
+                                19.50
+                              </td>
+                              <td class="5xxxx columns hoverable">
+                                86.74
+                              </td>
+                              <td class="6xxxx columns hoverable">
+                                -5.02
+                              </td>
+                              <td class="7xxxx columns hoverable">
+                                8.72
+                              </td>
+                              <td class="8xxxx columns hoverable">
+                                99.00
+                              </td>
+                              <td class="9xxxx columns hoverable">
+                                9.00
+                              </td>
+                              <td class="10xxxx columns hoverable">
+                                72.00
+                              </td>
+                              <td class="11xxxx columns hoverable">
+                                23.00
+                              </td>
+                              <td class="12xxxx columns hoverable">
+                                Consumer Discretionary
+                              </td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="box">
+                        <div class="new-box-body font-400">
+                          <ul
+                              class="nav nav-tabs nav-tabs-justified nav-big-font"
+                          >
+                            <li class="active">
+                              <a href="#home-3" data-toggle="tab">
+                                <span class="hidden-xs">最新</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="#home-4" data-toggle="tab">
+                                <span class="hidden-xs">新闻</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="#home-4" data-toggle="tab">
+                                <span class="hidden-xs">研报</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="#profile-3" data-toggle="tab">
+                                <span class="hidden-xs">电话会议</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="#profile-3" data-toggle="tab">
+                                <span class="hidden-xs">业绩公告</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="#messages-3" data-toggle="tab">
+                                <span class="hidden-xs">内部AI研报</span>
+                              </a>
+                            </li>
+                          </ul>
+
+                          <div
+                              id="accordion0_newsData-1"
+                              class="collapse show"
+                              data-parent="#accordion0_newsData-1"
+                          >
+                            <div class="card-body" style="padding: 0px">
+                              <div class="card">
+                                <div
+                                    style
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-0-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      onclick="showContents('benzinga_35027346',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5
+                                          class="mb-1"
+                                          vid="benzinga_35027346"
+                                      >
+                                            <span
+                                                class="badge badge-success badge-pill"
+                                                style="background-color: #0a7b44"
+                                            >
+                                              0.46
+                                            </span>
+                                        <b
+                                        >&nbsp;领英创始人霍夫曼以"快速扩张"法反驳马斯克AI观点，推动人类进化</b
+                                        >
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-02 11:11:03
+                                      &nbsp;&nbsp;benzinga
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-0-newsData"
+                                      data-parent="#accordion0-0-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-0-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-0-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.benzinga.com/news/23/10/35027346/linkedin-founder-reid-hoffman-counters-elon-musks-ai-approach-with-blitzscaling-method-to-propel-hum"
+                                            target="_blank"
+                                        ><br/>查看原文
+                                        </a>
+                                        <a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    style
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-1-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-1-newsData"
+                                      viewid="0-1-newsData"
+                                      secondtype
+                                      onclick="showContents('cnbc_084f1db5d1d13e692ec1d84e32cc6ce0',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5
+                                          class="mb-1"
+                                          vid="cnbc_084f1db5d1d13e692ec1d84e32cc6ce0"
+                                      >
+                                            <span
+                                                class="badge badge-success badge-pill"
+                                                style="background-color: #0a7b44"
+                                            >0.62</span
+                                            ><b
+                                      >&nbsp;分析师对这些科技股票持有不同观点：Adyen（ADYYF）与微软（MSFT）</b
+                                      >
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-02 06:40:57 &nbsp;&nbsp;cnbc
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-1-newsData"
+                                      data-parent="#accordion0-1-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-1-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-1-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.tipranks.com/news/blurbs/analysts-conflicted-on-these-technology-names-adyen-otheradyyf-and-microsoft-msft"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    style
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-2-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-2-newsData"
+                                      viewid="0-2-newsData"
+                                      secondtype
+                                      onclick="showContents('benzinga_35022429',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5
+                                          class="mb-1"
+                                          vid="benzinga_35022429"
+                                      >
+                                            <span
+                                                class="badge badge-danger badge-pill"
+                                                style="background-color: #c9392c"
+                                            >0.96</span
+                                            ><b
+                                      >&nbsp;微软CEO萨蒂亚·纳德拉今日出庭谷歌反垄断案：你需要知道的</b
+                                      >
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-02 06:35:53
+                                      &nbsp;&nbsp;benzinga
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-2-newsData"
+                                      data-parent="#accordion0-2-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-2-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-2-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.benzinga.com/news/23/10/35022429/microsofts-satya-nadella-to-take-the-stand-today-at-google-antitrust-trial-what-you-need-to-know"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-3-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-3-newsData"
+                                      viewid="0-3-newsData"
+                                      secondtype
+                                      onclick="showContents('benzinga_35021830',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5
+                                          class="mb-1"
+                                          vid="benzinga_35021830"
+                                      >
+                                            <span
+                                                class="badge badge-warning badge-pill"
+                                                style="background-color: #ebd517"
+                                            >0.44</span
+                                            >&nbsp;苹果是否会用自家搜索引擎取代谷歌？马克·古尔曼称或许只是时间问题
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-02 02:07:46
+                                      &nbsp;&nbsp;benzinga
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-3-newsData"
+                                      data-parent="#accordion0-3-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-3-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-3-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.benzinga.com/news/23/10/35021830/could-apple-replace-google-with-its-own-search-engine-it-maybe-a-matter-of-when-says-mark-gurman"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-4-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-4-newsData"
+                                      viewid="0-4-newsData"
+                                      secondtype
+                                      onclick="showContents('cnbc_107308329',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5 class="mb-1" vid="cnbc_107308329">
+                                            <span
+                                                class="badge badge-success badge-pill"
+                                                style="background-color: #0a7b44"
+                                            >0.69</span
+                                            >&nbsp;华尔街顶级分析师推荐五只高回报股票
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-01 11:53:26 &nbsp;&nbsp;cnbc
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-4-newsData"
+                                      data-parent="#accordion0-4-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-4-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-4-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.cnbc.com/2023/10/01/top-wall-street-analysts-pick-these-five-stocks-for-compelling-returns.html"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-5-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-5-newsData"
+                                      viewid="0-5-newsData"
+                                      secondtype
+                                      onclick="showContents('cnbc_107309093',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5 class="mb-1" vid="cnbc_107309093">
+                                            <span
+                                                class="badge badge-warning badge-pill"
+                                                style="background-color: #ebd517"
+                                            >0.69</span
+                                            >&nbsp;经历艰难的第三季度后，科技股在2023年底的预期
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-10-01 11:34:57 &nbsp;&nbsp;cnbc
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-5-newsData"
+                                      data-parent="#accordion0-5-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-5-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-5-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.cnbc.com/2023/10/01/quarterly-investment-guide-tech-stock-outlook-for-the-fourth-quarter.html"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-6-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-6-newsData"
+                                      viewid="0-6-newsData"
+                                      secondtype
+                                      onclick="showContents('benzinga_35017469',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5
+                                          class="mb-1"
+                                          vid="benzinga_35017469"
+                                      >
+                                            <span
+                                                class="badge badge-warning badge-pill"
+                                                style="background-color: #ebd517"
+                                            >0.61</span
+                                            >&nbsp;揭示AI：五角大楼寻求顶级LLM公司的透明度以应对道德挑战
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-09-30 16:44:07
+                                      &nbsp;&nbsp;benzinga
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-6-newsData"
+                                      data-parent="#accordion0-6-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-6-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-6-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://www.benzinga.com/markets/equities/23/09/35017469/unmasking-ai-pentagon-seeks-transparency-from-top-llm-companies-to-confront-ethical-challenges"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                                <div
+                                    class="newsData_MSFT__O__USA"
+                                    id="accordion0-7-11"
+                                >
+                                  <a
+                                      data-toggle="collapse"
+                                      class="d-flex list-group-item no-left-right-border-list-item list-group-item-action flex-column align-items-start collapse"
+                                      href="#accordion0-7-newsData"
+                                      viewid="0-7-newsData"
+                                      secondtype
+                                      onclick="showContents('sA_4016825',this)"
+                                  >
+                                    <div
+                                        class="d-flex justify-content-between w-100"
+                                    >
+                                      <h5 class="mb-1" vid="sA_4016825">
+                                            <span
+                                                class="badge badge-success badge-pill"
+                                                style="background-color: #0a7b44"
+                                            >0.62</span
+                                            >&nbsp;Zscaler、Palo
+                                        Alto、微软预计在安全支出中实现突破
+                                      </h5>
+                                    </div>
+                                    <small class="text-muted"
+                                    >2023-09-30 01:44:42
+                                      &nbsp;&nbsp;seekingAlpha
+                                      &nbsp;&nbsp;</small
+                                    >
+                                  </a>
+                                  <div
+                                      class="list-group list-group-flush collapse"
+                                      id="accordion0-7-newsData"
+                                      data-parent="#accordion0-7-11"
+                                  >
+                                    <li
+                                        class="list-group-item py-4"
+                                        id="loading_0-7-newsData"
+                                    >
+                                      <div
+                                          class="mt-2"
+                                          id="content_0-7-newsData"
+                                      ></div>
+                                      <div class="mt-12">
+                                        <a
+                                            href="https://seekingalpha.com/news/4016825-zscaler-palo-alto-microsoft-breakthrough-trough-security-spending"
+                                            target="_blank"
+                                        ><br/>查看原文</a
+                                        ><a></a>
+                                      </div>
+                                    </li>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /BOX -->
+              </div>
+            </div>
+          </div>
+          {% include 'include/bottom.html' %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'include/infomodal.html' %}
+
+  <div
+      class="modal fade"
+      id="modal_new_portfolio"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-hidden="true"
+          >
+            &times;
+          </button>
+          <h4 class="modal-title"><b>新建组合</b></h4>
+        </div>
+        <div class="modal-body">
+          <form
+              class="form-horizontal"
+              role="form"
+              id="form_new_userportfolio"
+          >
+            <div class="form-group">
+              <label class="col-sm-3 control-label"
+              >组合名称<span class="required">*</span>：</label
+              >
+              <div class="col-sm-8">
+                <input
+                    type="text"
+                    class="form-control text required"
+                    id="new_portfolio_name"
+                    name="new_portfolio_name"
+                    placeholder="请输入组合名称"
+                    value="用户组合1"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+              type="button"
+              class="btn btn-primary"
+              id="submit_userportfolio"
+              onclick="submit_new_userportfolio()"
+          >
+            新建组合
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              data-dismiss="modal"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+      class="modal fade"
+      id="modal_add_stock"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-hidden="true"
+          >
+            &times;
+          </button>
+          <h4 class="modal-title"><b>添加股票</b></h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" role="form" id="form_add_stock">
+            <div class="form-group">
+              <label class="col-sm-3 control-label"
+              >Add Symbols<span class="required">*</span>：</label
+              >
+              <div class="col-sm-8">
+                <input
+                    type="text"
+                    class="form-control text required"
+                    id="add_stock_search_input"
+                    name="add_stock_search_input"
+                    placeholder="Add symbols"
+                    value=""
+                />
+              </div>
+            </div>
+          </form>
+
+					<table class="table table-hover table-borderless w-100">
+						<tbody id="candidate_stocks_list">
+							<!-- List of candidate stocks will be populated dynamically -->
+						</tbody>
+					</table>
+					<table class="table table-borderless w-100">
+						<tbody id="chosen_stocks_list">
+							<!-- List of chosen stocks will be populated dynamically -->
+						</tbody>
+					</table>
+        </div>
+
+        <div class="modal-footer">
+          <button
+              type="button"
+              class="btn btn-primary"
+              id="submit_add_stock"
+              onclick="handleAddStockButtonClick()"
+          >
+            添加
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              data-dismiss="modal"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!--/PAGE -->
+<!-- JAVASCRIPTS -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- JQUERY -->
+<script src="/static/js/jquery/jquery-2.0.3.min.js"></script>
+<!-- JQUERY UI-->
+<script src="/static/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+<!-- BOOTSTRAP -->
+<script src="/static/bootstrap-dist/js/bootstrap.min.js"></script>
+<!-- WIZARD -->
+<script src="/static/js/jquery-validate/jquery.validate.min.js"></script>
+<script src="/static/js/jquery-validate/additional-methods.min.js"></script>
+<script src="/static/js/jquery-validate/localization/messages_zh.js"></script>
+<!--TOASTR-->
+<script src="/static/js/toastr-2.1.3/toastr.min.js"></script>
+
+<!--JQuery DataTables-->
+<script src="/static/js/datatables/1.10.18/DataTables-1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/datatables/1.10.18/DataTables-1.10.18/js/dataTables.bootstrap.js"></script>
+<script src="/static/js/datatables/1.10.18/ColReorder-1.5.0/js/dataTAbles.colReorder.js"></script>
+
+<!--固定表头文件-->
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="/static/js/datatables/1.10.18/FixedHeader-3.1.4/css/fixedHeader.dataTables.min.css"
+/>
+<script
+    type="text/javascript"
+    src="/static/js/datatables/1.10.18/FixedHeader-3.1.4/js/dataTables.fixedHeader.min.js"
+></script>
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="/static/js/datatables/1.10.18/FixedColumns-3.2.5/css/fixedColumns.dataTables.min.css"
+/>
+<script
+    type="text/javascript"
+    src="/static/js/datatables/1.10.18/FixedColumns-3.2.5/js/dataTables.fixedColumns.min.js"
+></script>
+
+<!--加导出CSV按钮-->
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="/static/js/datatables/1.10.18/Buttons-1.5.4/css/buttons.dataTables.min.css"
+/>
+<script
+    type="text/javascript"
+    src="/static/js/datatables/1.10.18/Buttons-1.5.4/js/dataTables.buttons.min.js"
+></script>
+<script
+    type="text/javascript"
+    src="/static/js/datatables/1.10.18/JSZip-2.5.0/jszip.min.js"
+></script>
+<script
+    type="text/javascript"
+    src="/static/js/datatables/1.10.18/Buttons-1.5.4/js/buttons.html5.min.js"
+></script>
+
+<!-- DATE RANGE PICKER -->
+<!--script src="/static/js/bootstrap-daterangepicker/moment.min.js"></script>
+
+<script src="/static/js/bootstrap-daterangepicker/daterangepicker.min.js"></script-->
+<!-- SLIMSCROLL -->
+<!--script type="text/javascript" src="/static/js/jQuery-slimScroll-1.3.0/jquery.slimscroll.min.js"></script>
+<script type="text/javascript" src="js/jQuery-slimScroll-1.3.0/slimScrollHorizontal.min.js"></script-->
+<!-- COOKIE -->
+<script
+    type="text/javascript"
+    src="/static/js/jQuery-Cookie/jquery.cookie.min.js"
+></script>
+
+<!-- CUSTOM SCRIPT -->
+<script src="/static/js/script.js"></script>
+<script
+    type="text/javascript"
+    src="/static/js/InvestCopilot/vscript_tools.js?v=0.01"
+></script>
+<script
+    type="text/javascript"
+    src="/static/js/InvestCopilot/vscript_userportfolio.js?v=0.01"
+></script>
+
+<script>
+  jQuery(document).ready(function () {
+    App.init(); //Initialise plugins and elements and menu
+    //initiate the page
+    init_base_control();
+  });
+
+	let userportfolio = {{ userportfoliolist|safe }};
+	let all_stockinfo = {{ all_stockinfo|safe }};
+	let cur_stocklist = [];
+	console.log("userportfolio", userportfolio);
+	console.log("all_stockinfo", all_stockinfo);
+
+	let chosenStocks = [];
+
+	const candidateStocksList = document.querySelector('#candidate_stocks_list');
+	const chosenStocksList = document.querySelector('#chosen_stocks_list');
+	const addStockSearchInput = document.querySelector('#add_stock_search_input');
+	let timeoutId;
+
+	addStockSearchInput.addEventListener('input', () => {
+		clearTimeout(timeoutId);
+		timeoutId = setTimeout(() => {
+			const searchTerm = addStockSearchInput.value.toLowerCase();
+			// 如果输入为空，则清空候选列表
+			if (searchTerm.length === 0) {
+				if (candidateStocksList.hasChildNodes()) {
+					candidateStocksList.innerHTML = "";
+				}
+				chosenStocksList.style.display = 'table-row-group';
+				candidateStocksList.style.display = 'none';
+				return;
+			}
+
+			const matchingStocks = [];
+			for (let stock of all_stockinfo) {
+				// 按照 symbol、name 或拼音首字母匹配
+				if (stock.stockcode.toLowerCase().includes(searchTerm) ||
+						stock.stockname.toLowerCase().includes(searchTerm) ||
+						stock.pinyin.toLowerCase().includes(searchTerm)) {
+					matchingStocks.push(stock);
+					if (matchingStocks.length === 10) {
+						break;
+					}
+				}
+			}
+
+			if (candidateStocksList.hasChildNodes()) {
+				candidateStocksList.innerHTML = "";
+			}
+			chosenStocksList.style.display = 'none';
+			candidateStocksList.style.display = 'table-row-group';
+			matchingStocks.forEach(stock => {
+				const tableRow = document.createElement('tr');
+				const stockCodeCell = document.createElement('td');
+				const stockNameCell = document.createElement('td');
+				stockCodeCell.textContent = stock.stockcode;
+				stockNameCell.textContent = stock.stockname;
+				tableRow.appendChild(stockCodeCell);
+				tableRow.appendChild(stockNameCell);
+				
+				tableRow.addEventListener('click', () => {
+					// 重复点击不会重复添加
+					if (chosenStocks.indexOf(stock) > -1) {
+						chosenStocksList.style.display = 'table-row-group';
+						candidateStocksList.style.display = 'none';
+						return;
+					}
+
+					chosenStocks.push(stock);
+					const chosenTableRow = document.createElement('tr');
+					const chosenStockCodeCell = document.createElement('td');
+					const chosenStockNameCell = document.createElement('td');
+					chosenStockCodeCell.textContent = stock.stockcode;
+					chosenStockNameCell.textContent = stock.stockname;
+
+					// 删除按钮
+					const deleteButtonCell = document.createElement('td');
+					const deleteButton = document.createElement('button');
+					deleteButton.textContent = '删除';
+					deleteButton.addEventListener('click', () => {
+						const index = chosenStocks.indexOf(stock);
+						if (index > -1) {
+							chosenStocks.splice(index, 1);
+						}
+						chosenTableRow.remove();
+					});
+					deleteButton.classList.add('btn');
+					deleteButtonCell.appendChild(deleteButton);
+
+					chosenTableRow.appendChild(chosenStockCodeCell);
+					chosenTableRow.appendChild(chosenStockNameCell);
+					chosenTableRow.appendChild(deleteButtonCell);
+
+					chosenStocksList.appendChild(chosenTableRow);
+					chosenStocksList.style.display = 'table-row-group';
+					candidateStocksList.style.display = 'none';
+				});
+
+				candidateStocksList.appendChild(tableRow);
+			});
+		}, 
+		// debounce time
+		300);
+	});
+
+	function handleAddStockButtonClick() {
+		console.log(chosenStocks);
+		chosenStocks = [];
+		chosenStocksList.innerHTML = "";
+	}
+</script>
+<!-- /JAVASCRIPTS -->
+</body>
+</html>

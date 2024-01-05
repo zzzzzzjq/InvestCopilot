@@ -1,0 +1,500 @@
+{% load gftags %}
+<html lang="zh_CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>InvestCopilot | Manage Dict </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="InvestCopilot">
+    <meta name="author" content="Robby">
+
+
+    <link rel="stylesheet" type="text/css" href="/static/css/InvestCopilot.css">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/themes/night.css" id="skin-switcher">
+    <link rel="stylesheet" type="text/css" href="/static/css/responsive.css">
+    <!-- JQUERY UI-->
+    <link rel="stylesheet" type="text/css"
+          href="/static/js/jquery-ui-1.10.3.custom/css/custom-theme/jquery-ui-1.10.3.custom.min.css"/>
+
+    <!-- Table Page styles -->
+    <link rel="stylesheet" href="/static/js/datatables/dataTables.bootstrap.css">
+    <!-- Imported scripts on Select Page -->
+    <link rel="stylesheet" href="/static/js/select2/select2.css">
+    <link rel="stylesheet" href="/static/js/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="/static/js/multiselect/css/multi-select.css">
+    <link rel="stylesheet" type="text/css"
+          href="/static/js/jquery.mloading-master/src/jquery.mloading.css">
+    <style type="text/css">
+
+        .aginChoose {
+            -webkit-transition: border linear .2s,
+            -webkit-box-shadow linear .5s;
+            -webkit-box-shadow: 0 0 2px red;
+        }
+
+        #cacheListTbDiv {
+            padding: 0px !important;
+        }
+
+        .newComb2 {
+            width: 48% !important;
+        }
+
+        .newComb2 li {
+            width: 16.665% !important;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+{% include 'include/top.html' %}
+
+<!-- PAGE -->
+<section id="page">
+    {% include 'include/page_menu_v_1.html' %}
+    <div id="main-content">
+        <div class="container">
+            <div class="row">
+                <div id="content" class="col-lg-12">
+                    <!-- PAGE HEADER-->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="page-header">
+                                <div class="description"></div>
+                                <div class="clearfix">
+                                    <h5 class="content-title pull-left">字典管理</h5>
+                                </div>
+                                <div class="description"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /PAGE HEADER -->
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <!-- BOX-->
+                                <div class="box border lite">
+                                    <div class="box-title">
+                                        <h4><i class="fa fa-bars"></i>字典列表</h4>
+                                    </div>
+                                    <div class="box-body center">
+                                        <p id="div_dictList">
+                                        </p>
+                                    </div>
+                                </div>
+                                <!-- /BOX -->
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p class="btn-toolbar">
+                                            <button class="btn btn-default"
+                                                    onclick="show_modal('addDictKeyModal','add')">新增字典
+                                            </button>
+                                            <button class="btn btn-default"
+                                                    onclick="show_modal('addDictValueModal','add')">添加字典值
+                                            </button>
+                                            <button class="btn btn-default"
+                                                    onclick="reloadDictData()">刷新字段缓存
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body" id="table_dict_div">
+                                        <table class="table table-striped table-bordered table-hover"
+                                               id="table_dict_value_list">
+                                            <thead>
+                                            <tr>
+                                                <th>字典编号</th>
+                                                <th>字典值</th>
+                                                <th>字典描述</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="table_tbody_dict_value_list">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% include 'include/bottom.html' %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade in" id="addDictKeyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-dialog modal-small" style="width: 35%;">
+            <div class="modal-content themestyle ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        新增字典
+                    </h4>
+                </div>
+                <div class="modal-body" id="addDictKeyModal_body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3 text-right">
+                                字典名称
+                                <span class="required">*</span>
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="keyName" name="keyName"
+                                       placeholder="输入字典名称名称">
+                                <span class="error-span"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="addDictKey();">添加</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade in" id="addDictValueModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="false">
+        <div class="modal-dialog modal-small" style="width: 35%;">
+            <div class="modal-content themestyle ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="addDictValueModalText">
+                        新增字典值
+                    </h4>
+                </div>
+                <div class="modal-body" id="addDictValueModal_body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3 text-right">
+                                字典值
+                                <span class="required">*</span>
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="add_keyValue" name="add_keyValue"
+                                       placeholder="输入字典值">
+                                <span class="error-span"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 text-right">
+                                字典说明
+                                <span class="required">*</span>
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="add_keyDesc" name="add_keyDesc"
+                                       placeholder="输入字典说明">
+                                <span class="error-span"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="add_keyNo">
+                    <input type="hidden" id="doMethod" name="add">
+                    <input type="hidden" id="old_keyValue">
+                    <button type="button" id="btn_addDictValueModal" class="btn btn-default" onclick="addDictValue();">
+                        添加
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-loading-overlay">
+        <div class="loader-2"></div>
+    </div>
+
+</section>
+<!--/PAGE -->
+
+<!-- JAVASCRIPTS -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- JQUERY -->
+<script src="/static/js/jquery/jquery-2.1.1.min.js"></script>
+<!-- JQUERY UI-->
+<script src="/static/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+<!-- BOOTSTRAP -->
+<script src="/static/bootstrap-dist/js/bootstrap.min.js"></script>
+
+<!-- Jquery Table  -->
+
+<script src="/static/js/datatables/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/datatables/dataTables.bootstrap.js"></script>
+<script src="/static/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+<script src="/static/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+<!--固定表头文件-->
+<link rel="stylesheet" type="text/css"
+      href="static/js/datatables/1.10.16/FixedColumns-3.2.4/css/fixedColumns.dataTables.min.css">
+<script type="text/javascript"
+        src="/static/js/datatables/1.10.16/FixedColumns-3.2.4/js/dataTables.fixedColumns.min.js"></script>
+
+
+<script type="text/javascript" src="/static/js/jQuery-BlockUI/jquery.blockUI.min.js"></script>
+<!--select2-->
+<script src="/static/js/select2/select2.min.js"></script>
+<!--script src="/static/js/select2/select2_locale_zh-CN.js"></script-->
+<script src="/static/js/multiselect/js/jquery.multi-select.js"></script>
+<!-- loading UI -->
+<script type="text/javascript"
+        src="/static/js/jquery.mloading-master/src/jquery.mloading.js"></script>
+
+<!-- COOKIE -->
+<script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+<!-- BOOTBOX -->
+<script type="text/javascript" src="/static/js/bootbox/bootbox.min.js"></script>
+
+<!-- COOKIE -->
+<script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+<!-- CUSTOM SCRIPT -->
+<script src="/static/js/script.js"></script>
+
+
+<script>
+    jQuery(document).ready(function () {
+        App.init(); //Initialise plugins and elements and menu
+
+        showTabData("dict")
+    });
+</script>
+
+<script>
+    var map = {
+        SQL联查结果数据: 'SQL',
+        字典数据: 'DICT',
+        整表数据: 'TABLE',
+        最新表数据: 'TABLE_NEW',
+        业务缓存: 'BASE_MODE'
+    };
+
+
+    function showTabData(tabId) {
+        if ("dict" == tabId) {
+            {#            <p id="div_dictList" style="height: 200px;">#}
+            {#                                                                <button class="btn btn-block btn-primary">These</button>#}
+            $.ajax({
+                type: 'POST',
+                url: '/api/getDictKeyList/',
+                success: function (result) {
+                    if (result.data.errorFlag == false) {
+                        console.log(result.data.errorMsg);
+                        App.unblockUI(dataTable);
+                        return;
+                    }
+                    var btnList = [];
+                    $.each(result.data.dictKeyList, function (idx, keyInfo) {
+                        {#                        btnList.push('<button class="btn btn-block btn-primary" onclick="showDictDetail(' + keyInfo.keyNo + ')">' + keyInfo.keyName + '</button>');#}
+                        btnList.push('<div id="keyNo_' + keyInfo.keyNo + '" class="btn-group dropdown" style="margin-bottom:5px;">' +
+                            '<button style="width:100px;" class="btn btn btn-light-grey" onclick="showDictDetail(' + keyInfo.keyNo + ')">' + keyInfo.keyName + '</button>' +
+                            '<button class="btn btn btn-light-grey dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>' +
+                            '<ul class="dropdown-menu"><li><a href="#" onclick="delDictKey(\'' + keyInfo.keyNo + '\')">删除</a></li></ul></div>');
+                        {#                        btnList.push('<div class="btn-group dropdown">' +#}
+                        {#                                '<button style="width:100px;" class="btn btn-default dropdown-toggle" data-toggle="dropdown" onclick="showDictDetail(' + keyInfo.keyNo + ')">'+keyInfo.keyName+'<span class="caret"></span></button>' +#}
+                        {#                                '<ul class="dropdown-menu context"><li><a href="#">删除</a></li></ul></div>');#}
+
+
+                    })
+                    $("#div_dictList").empty();
+                    $("#div_dictList").append(btnList.join(""));
+                }
+            });
+
+        }
+    }
+
+    function showDictDetail(keyNo) {
+        $("#doMethod").val('add');
+        var block = $("#table_dict_div");
+        App.blockUI(block);
+        $.ajax({
+            type: 'POST',
+            url: '/api/getDictValueList/',
+            data: {'keyNo': keyNo},
+            success: function (result) {
+                App.unblockUI(block);
+                if (result.data.errorFlag == false) {
+                    bootbox.alert(result.data.errorMsg);
+                    return;
+                }
+                var btnList = [];
+                $.each(result.data.dictValueList, function (idx, keyInfo) {
+                    btnList.push('<tr id="' + keyInfo.keyNo + "_" + keyInfo.keyValue + '">' +
+                        '<td><a href="#">' + keyInfo.keyNo + '</a></td>' +
+                        '<td class="hidden-xs">' + keyInfo.keyValue + '</td>' +
+                        '<td>' + keyInfo.keyName + '</td>' +
+                        '<td><span class="label label-danger label-sm" onclick="deDictValueByKey(\'' + keyInfo.keyNo + '\',\'' + keyInfo.keyValue + '\')">删除</span>' +
+                        '&nbsp;&nbsp;<span class="label label-primary label-sm" onclick="editDictValueByKey(\'' + keyInfo.keyNo + '\',\'' + keyInfo.keyValue + '\',\'' + keyInfo.keyName + '\')">编辑</span></td>' +
+                        '</tr>')
+                })
+                $("#add_keyNo").val(keyNo);
+                $("#table_tbody_dict_value_list").empty();
+                $("#table_tbody_dict_value_list").append(btnList.join(""));
+            }
+        });
+    }
+
+    function deDictValueByKey(keyNo, keyValue) {
+        bootbox.confirm("是否删除[" + keyNo + "]字典["+keyValue+"]值！",
+            function (result) {
+                var block = $("#table_dict_div");
+                App.blockUI(block);
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/delDictValueByKey/',
+                    data: {'keyNo': keyNo, 'keyValue': keyValue},
+                    success: function (result) {
+                        App.unblockUI(block);
+                        if (result.data.errorFlag == false) {
+                            bootbox.alert(result.data.errorMsg);
+                            return;
+                        }
+                        $("#" + keyNo + "_" + keyValue).remove();
+                    }
+                });
+            }
+        );
+    }
+
+    function addDictKey() {
+        var block = $("#addDictKeyModal_body");
+        App.blockUI(block);
+        $.ajax({
+            type: 'POST',
+            url: '/api/addDictKey/',
+            data: {'keyName': $("#keyName").val()},
+            success: function (result) {
+                App.unblockUI(block);
+                if (result.data.errorFlag == false) {
+                    bootbox.alert(result.data.errorMsg);
+                    return;
+                }
+                showTabData("dict");
+                $("#add_keyNo").val(result.data.keyNo);
+                showDictDetail(result.data.keyNo);
+                $("#addDictKeyModal").modal("hide");
+            }
+        });
+    }
+
+    function addDictValue() {
+        var add_keyNo = $("#add_keyNo").val();
+        var doMthod = $("#doMethod").val();
+        if (add_keyNo == '') {
+            bootbox.alter("请先选择需要添加的字典 ");
+        }
+        var block = $("#addDictValueModal_body");
+        App.unblockUI(block);
+        $.ajax({
+            type: 'POST',
+            url: '/api/addDictValueByKey/',
+            data: {
+                'doMethod': doMthod, 'keyNo': add_keyNo,
+                'keyDesc': $("#add_keyDesc").val(),
+                'keyValue': $("#add_keyValue").val(),
+                'oldKeyValue': $("#old_keyValue").val()
+            },
+            success: function (result) {
+                App.unblockUI(block);
+                if (result.data.errorFlag == false) {
+                    bootbox.alert(result.data.errorMsg);
+                    return;
+                }
+                showDictDetail(add_keyNo);
+                $("#addDictValueModal").modal("hide");
+
+
+            }
+        });
+    }
+
+    function reloadDictData() {
+        $.ajax({
+            type: 'POST',
+            url: '/api/reloadDictData/',
+            data: {
+            },
+            success: function (result) {
+                if (result.data.errorFlag == false) {
+                    bootbox.alert(result.data.errorMsg);
+                    return;
+                }
+                  bootbox.alert("字典缓存刷新成功！");
+            }
+        });
+    }
+
+    function delDictKey(keyNo) {
+
+        bootbox.confirm("是否删除[" + keyNo + "]字典",
+            function (result) {
+                var block = $("#div_tab_content");
+                App.unblockUI(block);
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/delDictKey/',
+                    data: {'keyNo': keyNo},
+                    success: function (result) {
+                        App.unblockUI(block);
+                        if (result.data.errorFlag == false) {
+                            bootbox.alert(result.data.errorMsg);
+                            return;
+                        }
+                        $("#keyNo_" + keyNo).remove();
+                        $("#table_tbody_dict_value_list").empty();
+                    }
+                });
+            }
+        );
+
+    }
+
+    function editDictValueByKey(keyNo, keyValue, keyDesc) {
+        $("#add_keyValue").val(keyValue);
+        $("#add_keyDesc").val(keyDesc);
+        $("#old_keyValue").val(keyValue);
+        $("#add_keyNo").val(keyNo);
+        show_modal('addDictValueModal', 'edit');
+    }
+
+    function show_modal(modalId, doMthod) {
+        if (doMthod == 'edit') {
+            $("#" + modalId + "Text").text("编辑字典值");
+            $("#btn_" + modalId).text("修改");
+            $("#doMethod").val('edit');
+        } else {
+            $("#add_keyValue").val('');
+            $("#add_keyDesc").val('');
+            $("#" + modalId + "Text").text("添加字典值");
+            $("#btn_" + modalId).text("添加");
+            $("#doMethod").val('add');
+        }
+        $("#" + modalId).modal({backdrop: 'static', keyboard: false});
+    }
+
+
+</script>
+
+
+</body>
+</html>

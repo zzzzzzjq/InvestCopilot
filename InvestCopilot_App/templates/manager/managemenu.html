@@ -1,0 +1,390 @@
+{% load gftags %}
+<html lang="zh_CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>InvestCopilot | Manage User Role </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+	<meta name="description" content="InvestCopilot">
+	<meta name="author" content="Rocky">
+
+
+	<link rel="stylesheet" type="text/css" href="/static/css/InvestCopilot.css" >
+	<link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css"  href="/static/css/themes/night.css" id="skin-switcher" >
+	<link rel="stylesheet" type="text/css"  href="/static/css/responsive.css" >
+    <!-- JQUERY UI-->
+	<link rel="stylesheet" type="text/css" href="/static/js/jquery-ui-1.10.3.custom/css/custom-theme/jquery-ui-1.10.3.custom.min.css" />
+
+    <!-- Table Page styles -->
+    <link rel="stylesheet" href="/static/js/datatables/dataTables.bootstrap.css">
+    <!-- Imported scripts on Select Page -->
+    <link rel="stylesheet" href="/static/js/select2/select2.css">
+    <link rel="stylesheet" href="/static/js/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="/static/js/multiselect/css/multi-select.css">
+    <link rel="stylesheet" type="text/css"
+          href="/static/js/jquery.mloading-master/src/jquery.mloading.css">
+
+
+</head>
+<body>
+	{% include 'include/top.html' %}
+	
+	<!-- PAGE -->
+	<section id="page">
+		{% include 'include/page_menu_v_1.html' %}
+        <div id="main-content">
+			<div class="container">
+				<div class="row">
+					<div id="content" class="col-lg-12">
+                        <!-- PAGE HEADER-->
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="page-header">
+									<div class="description"></div>
+									<div class="clearfix">
+										<h5 class="content-title pull-left">角色管理</h5>
+									</div>
+									<div class="description"></div>
+                                    {{ request|operaBusinCodeTag:'角色管理' }}
+								</div>
+							</div>
+						</div>
+						<!-- /PAGE HEADER -->
+                        <form action="managemenu.html" method="post" id="managerMenuForm" style="display: none;">
+                            <input type="text" name="roleId" id="roleIdInput">
+                        </form>
+                        <span style="display: none;" id="globRoleId">{{ data.roleId }}</span>
+
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-md-12">
+                                <button class="btn btn-info" style="margin-top: 10px;margin-bottom: 10px;" id="addRoleBtn">
+                                    <i class="fa fa-plus"></i>添加角色
+                                </button>
+                                <button class="btn btn-info" style="margin-top: 10px;margin-bottom: 10px;" id="flushCacheBtn">
+                                    刷新缓存
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-left" style=" margin-bottom: 20px;">
+                                <div class="panel panel-default themestyle">
+                                    <div class="panel-body themestyle">
+                                        <div class="tabbable tabs">
+                                            <div class="row ">
+                                                <div class="btn-toolbar"
+                                                    style=" margin-top: 5px; margin-bottom: 5px;margin-left: 5px;margin-right: 5px;display: block;"
+                                                    id="privRoleBtnToolBar">
+                                                    {% for role in data.privRoleList %}
+                                                        
+                                                            {% if role.roleid == data.roleId %}
+                                                                <div class="btn-group dropdown" style="margin-bottom: 5px;margin-left: 5px;margin-right: 5px;border-radius:4px !important;">
+                                                                    <button class="btn btn-inverse"
+                                                                            id="privRoleBtn{{ role.roleid }}"
+                                                                            roleid="{{ role.roleid }}"
+                                                                            rolename="{{ role.rolename }}"
+                                                                            onclick="getMenuList(this);"
+                                                                            >{{ role.rolename }}</button>
+                                                                    <button  class="btn btn-inverse dropdown-toggle" 
+                                                                            data-toggle="dropdown">
+                                                                        <i class="fa fa-times" style="font-size: 20px;"
+                                                                        onclick="removeRole('{{ role.roleid }}','{{ role.rolename }}')"></i>
+                                                                    </button>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="btn-group dropdown" style="margin-bottom: 5px;margin-left: 5px;margin-right: 5px;border-radius:4px !important;">
+                                                                    <button class="btn btn-gray"
+                                                                            id="privRoleBtn{{ role.roleid }}"
+                                                                            roleid="{{ role.roleid }}"
+                                                                            rolename="{{ role.rolename }}"
+                                                                            onclick="getMenuList(this);">
+                                                                        {{ role.rolename }}
+                                                                    </button>
+                                                                </div>
+                                                            {% endif %}
+                                                        
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="row" style="padding-left: 10px;padding-right: 10px;">
+                                                {% for menu in data.privRoleMenuList %}
+                                                    <div class="panel panel-default"
+                                                        style="padding-left:0px;padding-bottom:0px;">
+                                                        <h3 class="panel-title" style="background: #dddddd;">
+                                                            <div class="row">
+                                                                <div class="col-md-9">
+                                                                    <a class="accordion-toggle"
+                                                                    data-toggle="collapse"
+                                                                    data-parent="#accordion"
+                                                                    href="#{{ forloop.counter }}"
+                                                                    style="cursor: pointer;text-decoration: none;">
+                                                                        <span style="font-size: 15px;line-height: 23px;color: black;">{{ menu|getRoleMenu:'parentMenu' }}</span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </h3>
+                                                        <div id="{{ forloop.counter }}" class="panel-collapse collapse in">
+                                                            <div class="panel-body">
+                                                                {% for subMenu in  menu|getRoleMenu:'subMenu' %}
+                                                                    <div class="feed-activity clearfix"
+                                                                        style="width: 33%;float: left;">
+                                                                        <div>
+                                                                            <i class="pull-left roundicon circleMemberRoundicon_22"
+                                                                            name="checkInput"
+                                                                            style="display: block;">
+                                                                                <input type="checkbox" name="subMenuCheckbox"
+                                                                                    {% if subMenu.isHave == '1' %}checked{% endif %}
+                                                                                    subMenuId="{{ subMenu.menuId }}"
+                                                                                    onchange="amendPrivMenu(this);">
+                                                                            </i>
+                                                                            <span style="font-size: 15px;">{{ subMenu.menuName }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% include 'include/bottom.html' %}	
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade in" id="addPrivRoleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="false">
+        <div class="modal-dialog modal-small" style="width: 40%;">
+            <div class="modal-content themestyle ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        添加角色
+                    </h4>
+                </div>
+
+                <div class="modal-body" style="margin-bottom: 40px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            角色名称
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="roleNameInput" name="roleName"
+                                placeholder="输入角色名称">
+                            <span class="error-span"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="addPrivRoleOk();">
+                        确定
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-loading-overlay">
+        <div class="loader-2"></div>
+    </div>
+
+   </section>
+	<!--/PAGE -->
+	<!-- JAVASCRIPTS -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<!-- JQUERY -->
+	<script src="/static/js/jquery/jquery-2.1.1.min.js"></script>
+	<!-- JQUERY UI-->
+	<script src="/static/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<!-- BOOTSTRAP -->
+	<script src="/static/bootstrap-dist/js/bootstrap.min.js"></script>
+	
+	<!-- Jquery Table  -->
+
+    <script src="/static/js/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/datatables/dataTables.bootstrap.js"></script>
+    <script src="/static/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+    <script src="/static/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+    <!--固定表头文件-->
+    <link rel="stylesheet" type="text/css"
+        href="static/js/datatables/1.10.16/FixedColumns-3.2.4/css/fixedColumns.dataTables.min.css">
+    <script type="text/javascript"
+        src="/static/js/datatables/1.10.16/FixedColumns-3.2.4/js/dataTables.fixedColumns.min.js"></script>
+
+
+    <!--select2-->
+    <script src="/static/js/select2/select2.min.js"></script>
+    <!--script src="/static/js/select2/select2_locale_zh-CN.js"></script-->
+    <script src="/static/js/multiselect/js/jquery.multi-select.js"></script>
+    <!-- loading UI -->
+    <script type="text/javascript"
+        src="/static/js/jquery.mloading-master/src/jquery.mloading.js"></script>
+
+    <!-- COOKIE -->
+    <script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+    <!-- BOOTBOX -->
+    <script type="text/javascript" src="/static/js/bootbox/bootbox.min.js"></script>
+
+	<!-- COOKIE -->
+	<script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+	<!-- CUSTOM SCRIPT -->
+	<script src="/static/js/script.js"></script>
+    
+    
+    <script>
+		jQuery(document).ready(function() {	
+			App.init(); //Initialise plugins and elements and menu
+		});
+	</script>
+    <script>
+        $(function () {
+            globRoleId = $("#globRoleId").text();
+
+            $("#addRoleBtn").click(function () {
+                $("#roleNameInput").val('');
+                $("#roleNameInput").css('border-color', '#cccccc');
+                $("#roleNameInput").attr('placeholder', '输入角色名称');
+                $("#addPrivRoleModal").modal('show');
+            });
+
+            $("#roleNameInput").on('input propertychange', function () {
+                if ($(this).val().length != 0) {
+                    $("#roleNameInput").css('border-color', '#cccccc');
+                    $("#roleNameInput").attr('placeholder', '输入角色名称');
+                }
+            });
+
+            $("#flushCacheBtn").click(function () {
+                flushUserCache();
+            });
+        });
+
+        //刷新用户缓存
+        function flushUserCache() {
+            $.ajax({
+                type: "POST",
+                url: "/api/flushUserCache/",
+                data: {},
+                success: function (result) {
+                    if (result.errorFlag == false) {
+                        console.log(result.errorMsg);
+                        return;
+                    }
+                    bootbox.alert('刷新缓存成功！');
+                }
+            });
+        }
+
+        //获取角色菜单信息
+        function getMenuList(obj) {
+            var roleId = $(obj).attr('roleid');
+            $("#roleIdInput").val(roleId);
+            $("#managerMenuForm").submit();
+        }
+
+        //修改角色信息
+        function amendPrivMenu(obj) {
+            var subMenuId = $(obj).attr('subMenuId');
+            var isChecked = $(obj).is(':checked');
+            var operate = null;
+            if (isChecked == true) {
+                operate = 'add';
+            } else {
+                operate = 'del';
+            }
+            console.log(globRoleId);
+            console.log(subMenuId);
+            console.log(operate);
+            $.ajax({
+                type: "POST",
+                url: "/api/amendMenuPriv/",
+                data: {
+                    'roleId': globRoleId,
+                    'subMenuId': subMenuId,
+                    'operate': operate
+                },
+                success: function (result) {
+                    if (result.errorFlag == false) {
+                        bootbox.alert(result.errorMsg);
+                        return;
+                    }
+                    //bootbox.alert("修改成功！");
+                    return;
+                }
+            });
+        }
+        //删除角色
+        function removeRole(roleId, roleName) {
+            bootbox.confirm("确定删除[" + roleName + "]角色?，删除此角色后会导致已关联用户角色无法使用(需要重新分配角色)，请慎重操作！", function (rs) {
+                if (rs) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/removeMenuPriv/",
+                        data: {
+                            'roleId': roleId,
+                        },
+                        success: function (result) {
+                            if (!result.errorFlag) {
+                                bootbox.alert(result.errorMsg);
+                                return;
+                            }
+                            bootbox.alert('删除角色成功！');
+                            $("#roleIdInput").val('');
+                            $("#managerMenuForm").submit();
+                        }
+                    });
+                }
+            });
+        }
+
+        //添加角色
+        function addPrivRoleOk() {
+            var roleName = $("#roleNameInput").val();
+            if (roleName.length == 0) {
+                $("#roleNameInput").attr('placeholder', '角色名称不能为空！');
+                $("#roleNameInput").css('border-color', 'red');
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/api/addMenuPriv/",
+                data: {
+                    'roleName': roleName,
+                },
+                success: function (result) {
+                    if (!result.errorFlag) {
+                        if (result.errorCode == '0000005') {
+                            bootbox.alert(result.errorMsg);
+                        } else {
+                            console.log(result.errorMsg);
+                        }
+                        return;
+                    }
+                    var roleId = result.data.roleId;
+                    $("#roleIdInput").val(roleId);
+                    $("#managerMenuForm").submit();
+                }
+            });
+        }
+    </script>
+
+	<!-- /JAVASCRIPTS -->
+
+
+</body>
+</html>

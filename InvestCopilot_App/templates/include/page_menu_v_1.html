@@ -1,0 +1,72 @@
+
+{% load gftags %}
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-menu nav-collapse">
+        <div class="divide-20"></div>
+        <!-- SEARCH BAR -->
+        <!--div id="search-bar">
+            <input class="search" type="text" placeholder="Search"><i class="fa fa-search search-icon"></i>
+        </div-->
+        <!-- /SEARCH BAR -->
+        
+        <!-- SIDEBAR MENU -->
+
+        <ul id="main-menu" class="main-menu">
+            <div id="currentRequestUrl" style="display: none;">{{ request.path }}</div>  <!--隐藏域 当前请求的路由-->            
+            {% for menu in menuTreeList %}
+                <li class="has-sub">
+                    <a href="javascript:;" class="title">
+                        <i class="{{ menu|getMenu:'icon' }}"></i>
+                        <span class="menu-text">{{ menu|getMenu:'parent' }}</span>
+                    </a>
+                    <ul class="sub">
+                        {% for subMenu in menu|getMenu:'subList' %}
+                            <li>
+                                <a class="systemSubMenus" href="{{ subMenu.menuUrl }}">
+                                    <span class="title">{{  subMenu.menuName}}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <!-- /SIDEBAR MENU -->
+    </div>
+</div>
+<!-- /SIDEBAR -->
+
+
+<script src="/static/js/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function(){
+
+
+        //个股诊断页面 除简介之外的其他所有页面url
+        //重置所有菜单的样式 关闭所有一级菜单和二级菜单
+        $("#main-menu").find('li').each(function () {
+            $(this).removeClass('open');
+            $(this).find('ul').css('display','hide');
+        });
+
+        var currentRequestUrl = $("#currentRequestUrl").text().replace('/','');
+        /*
+        //对个别菜单做特殊处理
+        if($.inArray(currentRequestUrl,sideBarUrlArray) != -1){
+            currentRequestUrl = "fundhold2.html";
+        }*/
+        
+        $(".systemSubMenus").each(function(){
+            if($(this).attr('href') == currentRequestUrl){  //找到选中的二级菜单
+                //设置选中的二级菜单为高亮
+                $(this).parent('li').addClass('current');
+                //打开选中的二级菜单的同级所有菜单
+                $(this).parent('li').parent('ul').css('display','hide');
+                //打开选中的二级菜单所属的一级菜单
+                $(this).parent('li').parent('ul').parent('li').addClass('active');
+            }
+        });
+    });
+</script>

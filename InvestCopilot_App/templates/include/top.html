@@ -1,0 +1,69 @@
+
+    <!-- HEADER -->
+	<header class="navbar clearfix" id="header">
+		<div class="container">
+				<div class="navbar-brand">
+					<!-- COMPANY LOGO -->
+					<a href="index.html">
+						<img src="/static/img/logo/assets-logo-full.svg" alt="Invest Copilot Logo" class="img-responsive" height="30" width="180">
+					</a>
+					<!-- /COMPANY LOGO -->
+                    <!-- SIDEBAR COLLAPSE -->
+					<div id="sidebar-collapse" class="sidebar-collapse btn">
+						<i class="fa fa-bars" 
+							data-icon1="fa fa-bars" 
+							data-icon2="fa fa-bars" ></i>
+					</div>
+					<!-- /SIDEBAR COLLAPSE -->
+				</div>
+				<!-- NAVBAR LEFT -->
+
+				<!-- /NAVBAR LEFT -->
+				<!-- BEGIN TOP NAVIGATION MENU -->					
+				<ul class="nav navbar-nav pull-right">
+                    <li class="dropdown" id="header-notification">
+                    </li>
+                    <li class="dropdown" id="header-message">
+                    </li>
+                    <li class="dropdown" id="header-tasks">
+                    </li>
+
+					<!-- BEGIN USER LOGIN DROPDOWN -->
+					<li class="dropdown user" id="header-user" style="position:right">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<img alt="" src="/static/img/avatars/user.png" />
+							<span class="username">{{ request.session.usernickname }}</span>
+							<i class="fa fa-angle-down"></i>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="Changepassword.html"><i class="fa fa-user"></i> 修改密码</a></li>
+							<li><a href="#" onclick="logout()"><i class="fa fa-power-off"></i> 退出登录</a></li>
+						</ul>
+					</li>
+					<!-- END USER LOGIN DROPDOWN -->
+				</ul>
+				<!-- END TOP NAVIGATION MENU -->
+		</div>
+		<script>
+            function logout(){
+                $.ajax({
+                    url: "/logout/",
+                    method: 'POST',
+                    success: function (data) {
+                        window.location.href = "/";
+                        return false;                        
+                    }, 
+                    error: function (xhr, textStatus) {
+                        console.log(xhr);
+                        console.log(textStatus);
+                        window.location.href = "/";
+                        return false;
+                    }
+                });
+
+            }
+            
+        </script>
+
+	</header>
+	<!--/HEADER -->

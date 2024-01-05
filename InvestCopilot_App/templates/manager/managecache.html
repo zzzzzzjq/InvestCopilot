@@ -1,0 +1,413 @@
+{% load gftags %}
+<html lang="zh_CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>InvestCopilot | Manage Cache  </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+	<meta name="description" content="InvestCopilot">
+	<meta name="author" content="Rocky">
+
+
+	<link rel="stylesheet" type="text/css" href="/static/css/InvestCopilot.css" >
+	<link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css"  href="/static/css/themes/night.css" id="skin-switcher" >
+	<link rel="stylesheet" type="text/css"  href="/static/css/responsive.css" >
+    <!-- JQUERY UI-->
+	<link rel="stylesheet" type="text/css" href="/static/js/jquery-ui-1.10.3.custom/css/custom-theme/jquery-ui-1.10.3.custom.min.css" />
+
+    <!-- Table Page styles -->
+    <link rel="stylesheet" href="/static/js/datatables/dataTables.bootstrap.css">
+    <!-- Imported scripts on Select Page -->
+    <link rel="stylesheet" href="/static/js/select2/select2.css">
+    <link rel="stylesheet" href="/static/js/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="/static/js/multiselect/css/multi-select.css">
+    <link rel="stylesheet" type="text/css"
+          href="/static/js/jquery.mloading-master/src/jquery.mloading.css">
+    <style type="text/css">
+
+    .aginChoose {
+        -webkit-transition: border linear .2s,
+        -webkit-box-shadow linear .5s;
+        -webkit-box-shadow: 0 0 2px red;
+    }
+
+    #cacheListTbDiv {
+        padding: 0px !important;
+    }
+
+    .newComb2 {
+        width: 48%!important;
+    }
+
+    .newComb2 li {
+        width: 16.665% !important;
+    }
+
+    </style>
+
+</head>
+
+
+
+
+<body>
+	{% include 'include/top.html' %}
+	
+	<!-- PAGE -->
+	<section id="page">
+		{% include 'include/page_menu_v_1.html' %}
+        <div id="main-content">
+			<div class="container">
+				<div class="row">
+					<div id="content" class="col-lg-12">
+                        <!-- PAGE HEADER-->
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="page-header">
+									<div class="description"></div>
+									<div class="clearfix">
+										<h5 class="content-title pull-left">缓存管理</h5>
+									</div>
+									<div class="description"></div>
+                                    {{ request|operaBusinCodeTag:'缓存管理' }}
+								</div>
+							</div>
+						</div>
+						<!-- /PAGE HEADER -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default themestyle">
+                                    <div class="panel-body themestyle">
+                                        <ul class="nav nav-tabs nav-tabs-justified">
+                                            <li class="active" onclick="getCacheList('SQL')">
+                                                <a href="#home-3" data-toggle="tab">
+                                                    <span class="visible-xs"><i class="fa-home"></i></span>
+                                                    <span class="hidden-xs">SQL联查</span>
+                                                </a>
+                                            </li>
+                                            <li class="" onclick="getCacheList('DICT')">
+                                                <a href="#home-3" data-toggle="tab">
+                                                    <span class="visible-xs"><i class="fa-user"></i></span>
+                                                    <span class="hidden-xs">字典数据</span>
+                                                </a>
+                                            </li>
+                                            <li class="" onclick="getCacheList('TABLE')">
+                                                <a href="#home-3" data-toggle="tab">
+                                                    <span class="visible-xs"><i class="fa-envelope-o"></i></span>
+                                                    <span class="hidden-xs">整表数据</span>
+                                                </a>
+                                            </li>
+                                            <li class="" onclick="getCacheList('TABLE_NEW')">
+                                                <a href="#home-3" data-toggle="tab">
+                                                    <span class="visible-xs"><i class="fa-cog"></i></span>
+                                                    <span class="hidden-xs">最新表数据</span>
+                                                </a>
+                                            </li>
+                                            <li class="" onclick="loadKeySearch()">
+                                                <a href="#home-3" data-toggle="tab">
+                                                    <span class="visible-xs"><i class="fa-bell-o"></i></span>
+                                                    <span class="hidden-xs">KEY搜索</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content" style="margin-top: 5px;margin-bottom: 5px;margin-left: 5px;margin-right: 5px;">
+                                            <div class="row row_top" style="margin-top: 20px;text-align: center;" id="searchCacheDiv">
+                                                <input type="text" id="searchCache" name="searchCache"
+                                                    placeholder="输入KEY名称进行搜索"
+                                                    style="width: 25%;min-height: 35px;padding: 3px 6px 3px 6px;font-size: 15px;border-radius: 5px;border: 1px solid #DBDBDB;">
+                                                &nbsp;<button class="btn btn-primary" id="searchCacheBtn">搜索</button>
+                                            </div>
+
+                                            <div class="tab-pane active" id="home-3">
+                                                <div class="row" id="cacheListTbDiv">
+                                                    <table id="cacheListTb" cellpadding="0" cellspacing="0" border="0"
+                                                        class="table table-bordered table-striped">
+                                                        <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% include 'include/bottom.html' %}	
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-loading-overlay">
+            <div class="loader-2"></div>
+        </div>
+
+    </section>
+	<!--/PAGE -->
+ 
+    <!-- JAVASCRIPTS -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<!-- JQUERY -->
+	<script src="/static/js/jquery/jquery-2.1.1.min.js"></script>
+	<!-- JQUERY UI-->
+	<script src="/static/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<!-- BOOTSTRAP -->
+	<script src="/static/bootstrap-dist/js/bootstrap.min.js"></script>
+	
+	<!-- Jquery Table  -->
+
+    <script src="/static/js/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/datatables/dataTables.bootstrap.js"></script>
+    <script src="/static/js/datatables/yadcf/jquery.dataTables.yadcf.js"></script>
+    <script src="/static/js/datatables/tabletools/dataTables.tableTools.min.js"></script>
+
+    <!--固定表头文件-->
+    <link rel="stylesheet" type="text/css"
+        href="static/js/datatables/1.10.16/FixedColumns-3.2.4/css/fixedColumns.dataTables.min.css">
+    <script type="text/javascript"
+        src="/static/js/datatables/1.10.16/FixedColumns-3.2.4/js/dataTables.fixedColumns.min.js"></script>
+
+
+    <!--select2-->
+    <script src="/static/js/select2/select2.min.js"></script>
+    <!--script src="/static/js/select2/select2_locale_zh-CN.js"></script-->
+    <script src="/static/js/multiselect/js/jquery.multi-select.js"></script>
+    <!-- loading UI -->
+    <script type="text/javascript"
+        src="/static/js/jquery.mloading-master/src/jquery.mloading.js"></script>
+
+    <!-- COOKIE -->
+    <script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+    <!-- BOOTBOX -->
+    <script type="text/javascript" src="/static/js/bootbox/bootbox.min.js"></script>
+
+	<!-- COOKIE -->
+	<script type="text/javascript" src="/static/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+	<!-- CUSTOM SCRIPT -->
+	<script src="/static/js/script.js"></script>
+    
+    
+    <script>
+		jQuery(document).ready(function() {	
+			App.init(); //Initialise plugins and elements and menu
+		});
+	</script>
+
+<script>
+    var map = {
+        SQL联查结果数据:'SQL',
+        字典数据:'DICT',
+        整表数据:'TABLE',
+        最新表数据:'TABLE_NEW',
+        业务缓存:'BASE_MODE'
+    };
+
+    $(function(){
+        $("#searchCacheDiv").hide();
+        getCacheList('SQL');
+
+        $("#main_tab a").click(function(){
+            var that = this;
+            $("#main_tab").find('li').each(function(){
+                $(this).removeClass('active');
+            });
+            $(that).parent('li').addClass('active');
+        });
+
+        $("#searchCacheBtn").click(function(){
+            loadSearchCache();
+        });
+
+        //搜索框绑定回车事件
+        $('#searchCache').on('keypress', function (event) {
+            if (event.keyCode == 13) {
+                loadSearchCache();
+            }
+        });
+    });
+
+    //获取缓存列表数据
+    function getCacheList(cacheType){
+        $("#cacheListTbDiv").show();
+        $("#searchCacheDiv").hide();
+       $("#cacheListTbDiv").mLoading("show");
+        $.ajax({
+            type:'POST',
+            url:'/api/getSysCacheList/',
+            data:{
+                cacheType:cacheType
+            },
+            success:function(result){
+                $("#cacheListTbDiv").mLoading("hide");
+                if(result.errorFlag == false){
+                    console.log(result.errorMsg);
+                    return;
+                }
+                var columnsArray = new Array();
+                var columns = result.data.tbCol;
+                for (idx in columns){
+                    columnsArray.push({"title": columns[idx], "class": "center"});
+                }
+                var datas = result.data.tbData;
+                $('#cacheListTb').dataTable().fnClearTable();   //将数据清除
+                $('#cacheListTb').dataTable().fnDestroy();   //将数据清除
+                $('#cacheListTb').empty();   //将数据清除
+                var table = $('#cacheListTb').dataTable({
+                    "bAutoWidth": false,
+                    language: global_datatable_language,
+                    "order": [],
+                    "destroy": true,
+                    "sort": true,
+                    "searching": true,
+                    "paging": true,
+                    "info": true,
+                    "columns": columnsArray,
+                    "data": datas,
+                    "pageLength": 10,
+                    "columnDefs":[
+                        {
+                            "targets":[-1],
+                            "render":function(data,type,full){
+                                var text = '';
+                                if(full[2] == 'SQL联查结果数据' || full[2] == '字典数据' || full[2] == '业务缓存'){
+                                    text = '删除键';
+                                }else{
+                                    text = '刷新缓存';
+                                }
+                                var btnHtml = '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px; margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="flushCache(this);">'+text+'</button>';
+                                return btnHtml;
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    //刷新缓存
+    function flushCache(obj){
+        var key = $(obj).parent('td').parent('tr').children().eq(0).text();
+        var cacheType = $(obj).parent('td').parent('tr').children().eq(2).text();
+        $("#main-content").mLoading("show");
+        $.ajax({
+            type:'POST',
+            url:'/api/flushSysCacheKey/',
+            data:{
+                'cacheKey':key,
+            },
+            success:function(result){
+                $("#main-content").mLoading("hide");
+                if (result.errorFlag == false){
+                    bootbox.alert(result.errorMsg);
+                    return;
+                }
+                bootbox.alert('刷新成功！');
+                getCacheList(map[cacheType]);
+            }
+        });
+    }
+
+    //缓存搜索
+    function loadKeySearch(){
+        $("#searchCacheDiv").show();
+        $("#cacheListTbDiv").hide();
+        $("#searchCache").val('');
+    }
+
+    //加载搜索缓存结果
+    function loadSearchCache() {
+        $("#cacheListTbDiv").show();
+        var searchKey = $("#searchCache").val();
+        $("#searchCacheDiv").show();
+        $("#cacheListTbDiv").mLoading("show");
+        $.ajax({
+            type: "POST",
+            url: "/api/searchSysCache/",
+            data: {
+                searchKey: searchKey,
+            },
+            success: function (result) {
+                $("#cacheListTbDiv").mLoading("hide");
+                if (result.errorFlag == false) {
+                    console.log(result.errorMsg);
+                    return;
+                }
+                var columnsArray = new Array();
+                var columns = result.data.tbCol;
+                for (idx in columns) {
+                    columnsArray.push({"title": columns[idx], "class": "center"});
+                }
+                var datas = result.data.tbData;
+                $('#cacheListTb').dataTable().fnClearTable();   //将数据清除
+                $('#cacheListTb').dataTable().fnDestroy();   //将数据清除
+                $('#cacheListTb').empty();   //将数据清除
+                var table = $('#cacheListTb').dataTable({
+                    "bAutoWidth": false,
+                    language: global_datatable_language,
+                    "order": [],
+                    "destroy": true,
+                    "sort": true,
+                    "searching": true,
+                    "paging": true,
+                    "info": true,
+                    "columns": columnsArray,
+                    "data": datas,
+                    "pageLength": 25,
+                    "columnDefs": [
+                        {
+                            "targets": [-1],
+                            "render": function (data, type, full) {
+                                var text = '';
+                                if (full[2] == 'SQL联查结果数据' || full[2] == '字典数据' || full[2] == '业务缓存' || full[2] == '其他类型缓存') {
+                                    text = '删除键';
+                                } else {
+                                    text = '刷新缓存';
+                                }
+                                var btnHtml = '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px; margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="flushSearchCache(this);">' + text + '</button>';
+                                return btnHtml;
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+    function flushSearchCache(obj) {
+        var key = $(obj).parent('td').parent('tr').children().eq(0).text();
+        $("#main-content").mLoading("show");
+        $.ajax({
+            type: 'POST',
+            url: '/api/flushSysCacheKey/',
+            data: {
+                'cacheKey': key,
+            },
+            success: function (result) {
+                $("#main-content").mLoading("hide");
+                if (result.errorFlag == false) {
+                    bootbox.alert(result.errorMsg);
+                    return;
+                }
+                bootbox.alert('刷新成功！');
+                loadSearchCache();
+            }
+        });
+    }
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

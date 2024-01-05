@@ -1,0 +1,854 @@
+{% load staticfiles %}
+{% load gftags %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="InvestCopilot"/>
+    <meta name="author" content="Rocky"/>
+    <title>InvestCopilot - Funds Manger</title>
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}">
+    
+    <link rel="stylesheet" href="{% static 'assets/css/fonts/linecons/css/linecons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fonts/fontawesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/xenon-core.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/xenon-forms.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/xenon-skins.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/xenon-components.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
+    <!-- Table Page styles -->
+    <link rel="stylesheet" href="{% static 'assets/js/datatables/dataTables.bootstrap.css' %}">
+    <!-- Imported scripts on Select Page -->
+    <link rel="stylesheet" href="{% static 'assets/js/daterangepicker/daterangepicker-bs3.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/js/select2/select2.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/js/select2/select2-bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/js/multiselect/css/multi-select.css' %}">
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'assets/js/smartset/jquery.mloading-master/src/jquery.mloading.css' %}">
+    <!--<script src="{% static 'assets/js/jquery-1.11.1.min.js' %}"></script>-->
+
+
+</head>
+<body class="page-body">
+<div class="page-container">
+    <!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
+
+    <!-- Add "fixed" class to make the sidebar fixed always to the browser viewport. -->
+    <!-- Adding class "toggle-others" will keep only one menu item open at a time. -->
+    <!-- Adding class "collapsed" collapse sidebar root elements and show only icons. -->
+    <!-- Dynamic Menu  -->
+    {% include 'include/page_menu_v_1.html' %}
+    <div class="main-content">
+        {% include 'include/top.html' %}
+        <div class="row" style="padding-top:0px;">
+            <div class="col-md-12">
+                <!-- /DASHBOARD CONTENT -->
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-md-12 text-left" style=" margin-bottom: 20px;">
+                        <div class="panel panel-default themestyle">
+                            <div class="panel-body themestyle">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#set1" data-toggle="tab">                                            
+                                            <span class="hidden-xs">用户可访问基金设置</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#set2" data-toggle="tab">                                            
+                                            <span class="hidden-xs">基金负责人设置</span>
+                                        </a>
+                                    </li>                                    
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="set1">
+
+                                        <div class="row ">
+                                            <div class="btn-toolbar"
+                                                style=" margin-top: 5px; margin-bottom: 5px;display: block;"
+                                                id="privRoleBtnToolBar">
+                                                {% for user in allUserList %}
+                                                    <div class="btn-group" style="margin-bottom:5px;margin-left: 10px">
+                                                        {% if user.userId == activeUserId %}
+                                                            <div class="btn-group">
+                                                                <button type="button"
+                                                                        id="btn_userId_{{ user.userId }}"
+                                                                        name="name_userId"
+                                                                        onclick="getUserFundList({{ user.userId }});"
+                                                                        class="btn btn-black">{{ user.userName }}</button>
+                                                                <button type="button" class="btn btn-black dropdown-toggle"
+                                                                        name="btn_x"
+                                                                        id="btn_x_{{ user.userId }}"
+                                                                        data-toggle="dropdown">
+                                                                    <i class="fa-remove"
+                                                                    onclick="removeUserFundRole('{{ user.userId }}','{{ user.userName }}')"></i>
+                                                                </button>
+                                                            </div>
+                                                        {% else %}
+                                                            <button class="btn btn-gray" id="btn_userId_{{ user.userId }}"
+                                                                    name="name_userId"
+                                                                    onclick="getUserFundList({{ user.userId }});">
+                                                                {{ user.userName }}
+                                                            </button>
+                                                            <button type="button" style="display: none;"
+                                                                    class="btn btn-black dropdown-toggle"
+                                                                    name="btn_x"
+                                                                    id="btn_x_{{ user.userId }}"
+                                                                    data-toggle="dropdown">
+                                                                <i class="fa-remove"
+                                                                onclick="removeUserFundRole('{{ user.userId }}','{{ user.userName }}')"></i>
+                                                            </button>
+
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="row" id="userFundListDiv"
+                                            style="padding-left: 10px;padding-right: 10px;">
+                                            <table id="userFundListTable" cellpadding="0" cellspacing="0" border="0"
+                                                class="table table-bordered table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane " id="set2">
+                                        <div class="row">
+                                            <button class="btn btn-info"
+                                                style="margin-top: 10px; margin-right:10px;margin-bottom: 10px; position: relative; z-index:80;"
+                                                id="addFundManagerBtn">
+                                                <i class="fa fa-plus">基金负责人</i>
+                                            </button>
+                                        </div>
+                                        <div class="row">                                            
+                                            <div class="text-left" style="width: 100%;">
+                                                <div class="box-body vchart-body">
+                                                    <div class="row" id="userListDiv">
+                                                        <table id="userListTb" cellpadding="0" cellspacing="0" border="0"
+                                                            class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="operaterUserId" value="{{ activeUserId }}">
+            
+            <form action="managermenu.html" target="_blank" method="post" id="managerMenuForm" style="display: none;">
+                <input type="text" name="roleId" id="viewRoleId">
+            </form>
+        </div>
+
+        
+        {% include 'include/bottom.html' %}
+    </div>    
+</div>
+<div class="page-loading-overlay">
+    <div class="loader-2"></div>
+</div>
+<div class="modal fade " id="addFundManagerModal">
+    <div class="modal-dialog modal-small" style="width: 35%;">
+        <div class="modal-content themestyle ">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    添加基金负责人
+                </h4>
+            </div>
+
+            <div class="modal-body" style="margin-bottom: 40px;">
+                <form class="form-horizontal" onsubmit="return false">
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            基金名称
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-7">
+                            <select class="form-control" id="selectFund">
+                                {{ selectFund }}
+                            </select>
+                            <input type="hidden" id="fundName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            负责人
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-7">
+                            <select class="form-control" id="selectUser" name="selectUser">
+                                <option></option>
+                                {% for user in userList %}
+                                <option value="{{ user.userId }}">{{ user.userName }}</option>
+                                {% endfor %}
+                                <input type="hidden" id="userName">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            部门
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-7">
+                            <select class="form-control" id="departmentName" name="departmentName">
+                                <option></option>
+                                {% for department in departmentList %}
+                                <option value="{{ department }}">{{ department }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="error-span"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            负责人级别
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-7">
+                            <select class="form-control" id="managementType" name="managementType">
+                                <option></option>
+                                {% for managementType in managementTypeList %}
+                                <option value="{{ managementType }}">{{ managementType }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="error-span"></span>
+                        </div>
+
+                    </div>
+                    <input type="hidden" id="edFundCode">
+                    <input type="hidden" id="modifyFmId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="btn_addFundManager"
+                    onclick="fundManagerDoMethod('add');">
+                    添加
+                </button>
+                <button type="button" class="btn btn-info" id="btn_editeUser" style="display: none;"
+                    onclick="fundManagerDoMethod('edit');">
+                    修改
+                </button>
+                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RestUserPwd  -->
+<div class="modal fade " id="restUserPwdModal">
+    <div class="modal-dialog modal-small" style="width: 35%;">
+        <div class="modal-content themestyle ">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    重置密码
+                </h4>
+            </div>
+            <input type="hidden" id="restPwdUserId">
+            <div class="modal-body" style="margin-bottom: 40px;">
+                <form class="form-horizontal" onsubmit="return false">
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            新密码
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-9">
+                            <input type="password" class="form-control" id="newPwd" name="newPwd" placeholder="新密码">
+                            <span class="error-span"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 text-right" style="margin-top: 6px;">
+                            确认密码
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="col-md-9">
+                            <input type="password" class="form-control" id="newPwdAgain" name="newPwdAgain"
+                                placeholder="确认密码">
+                            <span class="error-span"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="btn_restPwd" onclick="restPwd();">
+                    确定
+                </button>
+                <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ 
+
+<!-- Bottom Scripts -->
+<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/js/TweenMax.min.js' %}"></script>
+<script src="{% static 'assets/js/resizeable.js' %}"></script>
+<script src="{% static 'assets/js/joinable.js' %}"></script>
+<script src="{% static 'assets/js/xenon-api.js' %}"></script>
+<script src="{% static 'assets/js/xenon-toggles.js' %}"></script>
+<script src="{% static 'assets/js/moment.min.js' %}"></script>
+<!-- Imported scripts on this page -->
+<script src="{% static 'assets/js/xenon-widgets.js' %}"></script>
+<script src="{% static 'assets/js/devexpress-web-14.1/js/globalize.min.js' %}"></script>
+<script src="{% static 'assets/js/devexpress-web-14.1/js/dx.chartjs.js' %}"></script>
+<script src="{% static 'assets/js/toastr/toastr.min.js' %}"></script>
+
+<!-- Imported scripts on Table Page -->
+<script src="{% static 'assets/js/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'assets/js/datatables/yadcf/jquery.dataTables.yadcf.js' %}"></script>
+<script src="{% static 'assets/js/datatables/tabletools/dataTables.tableTools.min.js' %}"></script>
+
+
+<!-- Imported scripts on this page -->
+<script src="{% static 'assets/js/daterangepicker/daterangepicker.js' %}"></script>
+<script src="{% static 'assets/js/datepicker/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'assets/js/timepicker/bootstrap-timepicker.min.js' %}"></script>
+<script src="{% static 'assets/js/colorpicker/bootstrap-colorpicker.min.js' %}"></script>
+<script src="{% static 'assets/js/select2/select2.min.js' %}"></script>
+<script src="{% static 'assets/js/select2/select2_locale_zh-CN.js' %}"></script>
+<script src="{% static 'assets/js/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'assets/js/selectboxit/jquery.selectBoxIt.min.js' %}"></script>
+<script src="{% static 'assets/js/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+<script src="{% static 'assets/js/typeahead.bundle.js' %}"></script>
+<script src="{% static 'assets/js/handlebars.min.js' %}"></script>
+<script src="{% static 'assets/js/multiselect/js/jquery.multi-select.js' %}"></script>
+
+<!--固定表头文件-->
+<link rel="stylesheet" type="text/css"
+      href="{% static 'assets/js/datatables/1.10.16/FixedColumns-3.2.4/css/fixedColumns.dataTables.min.css' %}">
+<script type="text/javascript"
+        src="{% static 'assets/js/datatables/1.10.16/FixedColumns-3.2.4/js/dataTables.fixedColumns.min.js' %}"></script>
+<!-- JavaScripts initializations and stuff -->
+<script src="{% static 'assets/js/xenon-custom.js' %}"></script>
+<!-- COOKIE -->
+<script type="text/javascript" src="{% static 'assets/js/jQuery-Cookie/jquery.cookie.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/smartset/bootbox/bootbox.min.js' %}"></script>
+<!-- loading UI -->
+<script type="text/javascript"
+        src="{% static 'assets/js/smartset/jquery.mloading-master/src/jquery.mloading.js' %}"></script>
+
+<script>
+    $(function () {
+        getUserFundList("{{ activeUserId }}");
+
+        getAllUserList();
+
+        $("#addFundManagerBtn").click(function () {
+            $("#myModalLabel").text("添加基金负责人");
+            $("#btn_addFundManager").show();
+            $("#btn_editeUser").hide();
+
+            $("#editeUserId").val('');
+            //启用选择
+            $("#selectFund").prop("disabled", false);
+            //重置
+            $("#selectFund").select2("val", "");
+            $("#selectUser").select2("val", "");
+            $("#departmentName").select2("val", "");
+            $("#managementType").select2("val", "");
+
+            $("#addFundManagerModal").modal('show');
+        });
+
+        //Select Init
+        $("#userCompany").select2({
+            placeholder: '请选择公司',
+            allowClear: true
+        }).on('select2-open', function () {
+            // Adding Custom Scrollbar
+            $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+        });
+
+        //Select Init
+        $("#userGroup").select2({
+            placeholder: '输入权限组名称(可选)',
+            allowClear: true
+        }).on('select2-open', function () {
+            // Adding Custom Scrollbar
+            $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+        });
+
+        //Select Init
+        var departmentNameSelect = $("#departmentName").select2({
+            placeholder: '请选择负责人部门',
+            allowClear: true
+        });
+        departmentNameSelect.on('change', function (e) {
+            $("#btn_viewRole").attr("btnRoleId", departmentNameSelect.val());
+            $("#btn_viewRole").text(e.added['text']);
+        })
+        var managementTypeSelect = $("#managementType").select2({
+            placeholder: '负责人级别',
+            allowClear: true
+        });
+        managementTypeSelect.on('change', function (e) {
+            $("#btn_viewRole").attr("btnRoleId", managementTypeSelect.val());
+            $("#btn_viewRole").text(e.added['text']);
+        })
+
+        //Select Init
+        var selectUser = $("#selectUser").select2({
+            placeholder: '请选择基金负责人',
+            allowClear: true
+        });
+        selectUser.on('change', function (e) {
+            $("#userName").val(e.added['text']);
+        })
+
+        //Select Init
+        $("#selectFund").select2({
+            placeholder: '请输入基金代码或名称...',
+            allowClear: true
+        }).on('select2-open', function () {
+            // Adding Custom Scrollbar
+            $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+        }).on('change', function (value) {
+            // Adding Custom Scrollbar
+            var sText = value.added.text;
+            var fundName = sText.slice(7);
+            $("#fundName").val(fundName);
+            $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+        });
+
+
+    });
+
+
+    //获取角色菜单信息
+    function getMenuList(obj) {
+        var roleId = $(obj).attr('roleid');
+        $("#roleIdInput").val(roleId);
+        $("#managerMenuForm").submit();
+    }
+
+    //修改角色信息
+    function amendPrivMenu(obj) {
+        var subMenuId = $(obj).attr('subMenuId');
+        var isChecked = $(obj).is(':checked');
+        var operate = null;
+        if (isChecked == true) {
+            operate = 'add';
+        } else {
+            operate = 'del';
+        }
+        $.ajax({
+            type: "POST",
+            url: "/api/amendMenuPriv/",
+            data: {
+                'roleId': globRoleId,
+                'subMenuId': subMenuId,
+                'operate': operate
+            },
+            success: function (result) {
+                if (result.errorFlag == false) {
+                    toastr.info(result.errorMsg);
+                    return;
+                }
+                toastr.info("修改成功！");
+                return;
+            }
+        });
+    }
+    //删除角色
+    function removeUserFundRole(userId, roleName) {
+        bootbox.confirm("确定删除[" + roleName + "]基金权限?", function (rs) {
+            if (rs) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/delUserFundRole/",
+                    data: {
+                        'userId': userId,
+                    },
+                    success: function (result) {
+                        if (!result.errorFlag) {
+                            toastr.info(result.errorMsg);
+                            return;
+                        }
+                        bootbox.alert('删除用户基金权限成功！');
+                        getUserFundList(userId);
+                    }
+                });
+            }
+        });
+    }
+
+    //获取用户基金列表
+    function getUserFundList(userId) {
+        $("#userFundListDiv").mLoading("show");
+        $.ajax({
+            type: "POST",
+            url: "/api/getUserFundRole/",
+            data: {"userId": userId},
+            success: function (result) {
+
+                $("#btn_userId_" + $("#operaterUserId").val()).attr("class", "btn btn-gray");
+                $("#btn_x_" + $("#operaterUserId").val()).css('display', "none");
+                $("#btn_userId_" + userId).attr("class", "btn btn-black");
+                $("#btn_x_" + userId).css("display", "inline");
+
+                $("#userFundListDiv").mLoading("hide");
+                if (result.errorFlag == false) {
+                    console.log(result.errorMsg);
+                    return;
+                }
+                var columnsArray = new Array();
+                var columns = result.tbColumns;
+                for (var idx in columns) {
+                    columnsArray.push({'title': columns[idx], 'class': 'center'});
+                }
+                var datas = result.tbData;
+                $('#userFundListTable').dataTable().fnClearTable();   //将数据清除
+                $('#userFundListTable').dataTable().fnDestroy();   //将数据清除
+                $('#userFundListTable').empty();   //将数据清除
+                $("#operaterUserId").val(userId);
+                simple_rows_selected = result.qyFcodeList;
+                glob_userFundListTable = $('#userFundListTable').DataTable({
+                    "bAutoWidth": false,
+                    language: {
+                        url: '/api/dataTableLanguage'
+                    },
+                    "order": [],
+                    "destroy": true,
+                    "sort": true,
+                    "searching": true,
+                    "paging": true,
+                    "info": true,
+                    "columns": columnsArray,
+                    "data": datas,
+                    "pageLength": 10,
+                    "columnDefs": [
+                        {
+                            'targets': [0],
+                            //"bSortable": false,
+                            //'sClass': 'check_columns',
+                            'render': function (data, type, full, meta) {
+                                return '<input type="checkbox"> ' + full[0];
+                            }
+                        },
+                        {
+                            "targets": [-1],
+                            "render": function (data, type, full) {
+                                if (data == '启用') {
+                                    var btnHtml = '<span id="' + full[0] + '"><button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px;margin-bottom:5px; padding-left:5px;padding-right:5px;">' + data + '</button></span>';
+                                    return btnHtml;
+                                }
+                                return "<span id='" + full[0] + "'>" + data + "</span>";
+                            }
+                        },
+
+                        { "visible": false, "targets": [2] }
+
+                    ], 'rowCallback': function (row, data, dataIndex) {
+                        // Get row ID
+                        var rowId = data[0];
+                        // If row ID is in the list of selected row IDs
+                        if ($.inArray(rowId, simple_rows_selected) !== -1) {
+                            $(row).find('input[type="checkbox"]').prop('checked', true);
+                            $(row).addClass('selected');
+                        }
+                    },
+                });
+
+                {#                $('#userFundListTable').DataTable().draw();#}
+                $('#userFundListTable').unbind('click');
+                $('#userFundListTable tbody').unbind('click');
+                // Handle click on checkbox
+                $('#userFundListTable tbody').on('click', 'input[type="checkbox"]', function (e) {
+                    var $row = $(this).closest('tr');
+                    $("#userFundListDiv").mLoading("show");
+                    // Get row data
+                    var data = glob_userFundListTable.row($row).data();
+                    // Get row ID
+                    var rowId = data[0];
+                    console.log(rowId);
+                    // Determine whether row ID is in the list of selected row IDs
+                    var index = $.inArray(rowId, simple_rows_selected);
+
+                    // If checkbox is checked and row ID is not in list of selected row IDs
+                    if (this.checked && index === -1) {
+                        //add
+                        var operaterFlag = "add";
+                        simple_rows_selected.push(rowId);
+
+                        // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
+                    } else if (!this.checked && index !== -1) {
+                        //remove
+                        var operaterFlag = "remove";
+                        simple_rows_selected.splice(index, 1);
+                    }
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/modifyUserFundRole/",
+                        data: {"userId": $("#operaterUserId").val(), "fcode": rowId, 'operaterFlag': operaterFlag},
+                        success: function (result) {
+                            console.log(result);
+                            $("#userFundListDiv").mLoading("hide");
+                            if (result.errorFlag == false) {
+                                simple_rows_selected.splice(index, 1);
+                                bootbox.alert(result.errorMsg);
+                                return;
+                            }
+                            if ("add" == operaterFlag) {
+                                var chg = '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px;margin-bottom:5px; padding-left:5px;padding-right:5px;">启用</button>'
+                                $("#" + rowId).empty();
+                                $("#" + rowId).append(chg);
+                            } else {
+                                $("#" + rowId).empty();
+                                $("#" + rowId).append("停用");
+                            }
+
+
+                            if (this.checked) {
+                                $row.addClass('selected');
+                            } else {
+                                $row.removeClass('selected');
+                            }
+
+                            // Update state of "Select all" control
+                            {#                            simple_updateDataTableselect_allCtrl(glob_userFundListTable);#}
+                        }
+                    });
+
+
+                    // Prevent click event from propagating to parent
+                    e.stopPropagation();
+                });
+
+                // Handle click on table cells with checkboxes
+                $('#userFundListTable').on('click', 'tbody td, thead th:first-child', function (e) {
+                    $(this).parent().find('input[type="checkbox"]').trigger('click');
+                });
+            }
+        });
+    }
+
+
+    function fun_select_all(obj) {
+        console.log("this.checked:", $(obj).get(0).checked);
+        if ($(obj).get(0).checked) {
+            $('#userFundListTable tbody input[type="checkbox"]:not(:checked)').trigger('click');
+        } else {
+            $('#userFundListTable tbody input[type="checkbox"]:checked').trigger('click');
+        }
+    }
+
+    //
+    // Updates "Select all" control in a data table
+    //
+    function simple_updateDataTableselect_allCtrl(table) {
+        var $table = table.table().node();
+        var $chkbox_all = $('tbody input[type="checkbox"]', $table);
+        var $chkbox_checked = $('tbody input[type="checkbox"]:checked', $table);
+        var chkbox_select_all = $('thead input[name="select_all"]', $table).get(0);
+
+        //console.log("chkbox_select_all:", chkbox_select_all);
+        // If none of the checkboxes are checked
+        if ($chkbox_checked.length === 0) {
+            chkbox_select_all.checked = false;
+            // If all of the checkboxes are checked
+        } else if ($chkbox_checked.length === $chkbox_all.length) {
+            chkbox_select_all.checked = true;
+            // If some of the checkboxes are checked
+        } else {
+            chkbox_select_all.checked = true;
+        }
+    }
+
+
+    var simple_rows_selected = [];
+    var glob_userFundListTable;
+
+
+</script>
+
+<script>
+   
+
+    function toEditeUser(obj,fmId,userId) {
+        $("#myModalLabel").text("编辑基金负责人");
+        $("#btn_addFundManager").hide();
+        $("#btn_editeUser").show();
+        var fundCode = $.trim($(obj).parent('td').parent('tr').children().eq(0).text());
+        var fundName = $.trim($(obj).parent('td').parent('tr').children().eq(1).text());
+        var fundManager = $.trim($(obj).parent('td').parent('tr').children().eq(2).text());
+        var managementType = $.trim($(obj).parent('td').parent('tr').children().eq(3).text());
+        var departmentName = $.trim($(obj).parent('td').parent('tr').children().eq(4).text());
+        $("#edFundCode").val(fundCode);
+
+        $($("#s2id_selectFund").find("a").find('span')[0]).text(fundName);
+        //不可用，不能选择
+        $("#selectFund").prop("disabled", true);
+        $("#selectFund").val(fundCode);
+        $("#fundName").val(fundName);
+        $($("#s2id_selectUser").find("a").find('span')[0]).text(fundManager);
+        $("#selectUser").val(userId);
+        $("#userName").val(fundManager);
+
+        $($("#s2id_departmentName").find("a").find('span')[0]).text(departmentName);
+        $("#departmentName").val(departmentName);
+        $("#modifyFmId").val(fmId);
+
+        $($("#s2id_managementType").find("a").find('span')[0]).text(managementType);
+        $("#managementType").val(managementType);
+
+        $("#addFundManagerModal").modal('show');
+    }
+
+    //获取基金负责人列表
+    function getAllUserList() {
+        $("#userListDiv").mLoading("show");
+        $.ajax({
+            type: "POST",
+            url: "/api/getFundManagerData/",
+            data: {},
+            success: function (result) {
+                console.log("result:", result);
+                $("#userListDiv").mLoading("hide");
+                if (!result.errorFlag) {
+                    bootbox.alert(result.errorMsg);
+                    return;
+                }
+                var columnsArray = new Array();
+                var columns = result.tableColumns;
+                for (var idx in columns) {
+                    columnsArray.push({ 'title': columns[idx], 'class': 'center' });
+                }
+                var datas = result.tableData;
+                $('#userListTb').dataTable().fnClearTable();   //将数据清除
+                $('#userListTb').dataTable().fnDestroy();   //将数据清除
+                $('#userListTb').empty();   //将数据清除
+                var table = $('#userListTb').dataTable({
+                    "bAutoWidth": false,
+                    language: {
+                        url: '/api/dataTableLanguage'
+                    },
+                    "order": [],
+                    "destroy": true,
+                    "sort": true,
+                    "searching": true,
+                    "paging": true,
+                    "info": true,
+                    "columns": columnsArray,
+                    "data": datas,
+                    "pageLength": 10,
+                    "columnDefs": [
+                        {
+                            "targets": [-1],
+                            "render": function (data, type, full) {
+                                //var btnHtml = '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px; margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="stopUser(this);">停用</button>' +
+                                //        '&nbsp;&nbsp;' +
+                                //        '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px;margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="startUser(this);">启用</button>';
+                                var btnHtml = '<button class="btn btn-primary btn-sm" style="height:23px;padding-top:1px;margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="toEditeUser(this,\'' + full[0] + '\',\''+full[1]+'\');">编辑</button>';
+                                var delHtml = '<button class="btn btn-danger btn-sm" style="height:23px;padding-top:1px;margin-bottom:5px; padding-left:5px;padding-right:5px;" onclick="delFundManager(\'' + full[2] + '\',\'' + full[3] + '\' ,\'' + full[5] + '\' ,\'' + full[0] + '\');">删除</button>';
+                                return btnHtml + delHtml;
+                            }
+                        },
+                        { "visible": false, "targets": [0,1] }
+                    ]
+                });
+            }
+        });
+    }
+
+    //添加基金负责人
+    function fundManagerDoMethod(doMethod) {
+        var departmentName = $("#departmentName").val();
+        var fundCode = $("#selectFund").val();
+        var fundName = $("#fundName").val();
+        var managerUserId = $("#selectUser").val();
+        var managementType = $("#managementType").val();
+        var modifyFmId = $("#modifyFmId").val();
+        $.ajax({
+            type: "POST",
+            url: "/api/fundManagerDoMethod/",
+            data: {
+                'fundCode': fundCode,
+                'doMethod': doMethod,
+                'fundName': fundName,
+                'managerUserId': managerUserId,
+                'managementType': managementType,
+                'departmentName': departmentName,
+                'modifyFmId': modifyFmId
+            },
+            success: function (result) {
+                if (!result.errorFlag) {
+                    bootbox.alert(result.errorMsg);
+                } else {
+                    toastr.info(result.errorMsg);
+                    $("#addFundManagerModal").modal('hide');
+                    getAllUserList()
+                }
+
+            }
+        });
+    }
+
+    //删除基金负责人
+    function delFundManager(fundCode, fundName,managementType, fmId) {
+        bootbox.confirm("是否删除[" + fundName + "][" + fundCode + "]["+managementType+"]", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/delFundManager/",
+                    data: {
+                        'fundCode': fundCode,
+                        'fundName': fundName,
+                        'fmId': fmId
+                    },
+                    success: function (result) {
+                        if (!result.errorFlag) {
+                            bootbox.alert(result.errorMsg);
+                        } else {
+                            toastr.info(result.errorMsg);
+                            $("#addFundManagerModal").modal('hide');
+                            getAllUserList()
+                        }
+
+                    }
+                });
+            }
+        })
+    }
+
+
+</script>
+</body>
+</html>
