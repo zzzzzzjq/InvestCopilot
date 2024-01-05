@@ -15,7 +15,7 @@ logger = logger_utils.LoggerUtils()
 
 def getAllMenuInfo():
     """
-    获取所有的菜单信息（纯数据）
+    获取所有的菜单信息（纯数据)
     """
     con = dbutils.getDBConnect()
     if settings.DBTYPE == 'Oracle':
